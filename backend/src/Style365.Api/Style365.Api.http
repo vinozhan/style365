@@ -1,0 +1,6 @@
+@Style365.Api_HostAddress = http://localhost:5042
+
+# GET {{Style365.Api_HostAddress}}/weatherforecast/
+# Accept: application/json
+
+###

@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{34070587-BFB3-4FD5-9B8B-54E817A4D2E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Style365.Api", "backend\src\Style365.Api\Style365.Api.csproj", "{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Style365.Application", "backend\src\Style365.Application\Style365.Application.csproj", "{707BC037-2511-46DF-A82A-3EBA7D2FCD99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Style365.Domain", "backend\src\Style365.Domain\Style365.Domain.csproj", "{8F80C967-073B-4079-B117-83A723E023EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Style365.Infrastructure", "backend\src\Style365.Infrastructure\Style365.Infrastructure.csproj", "{5D44DD28-E910-4252-A434-A2668B0F49A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Style365.Shared", "backend\src\Style365.Shared\Style365.Shared.csproj", "{27A79C01-2BAB-461C-AB75-E4938D5E5E3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{707BC037-2511-46DF-A82A-3EBA7D2FCD99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{707BC037-2511-46DF-A82A-3EBA7D2FCD99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{707BC037-2511-46DF-A82A-3EBA7D2FCD99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{707BC037-2511-46DF-A82A-3EBA7D2FCD99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F80C967-073B-4079-B117-83A723E023EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F80C967-073B-4079-B117-83A723E023EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F80C967-073B-4079-B117-83A723E023EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F80C967-073B-4079-B117-83A723E023EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D44DD28-E910-4252-A434-A2668B0F49A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D44DD28-E910-4252-A434-A2668B0F49A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D44DD28-E910-4252-A434-A2668B0F49A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D44DD28-E910-4252-A434-A2668B0F49A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27A79C01-2BAB-461C-AB75-E4938D5E5E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27A79C01-2BAB-461C-AB75-E4938D5E5E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27A79C01-2BAB-461C-AB75-E4938D5E5E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27A79C01-2BAB-461C-AB75-E4938D5E5E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{990B6B0C-EB54-4893-ABE8-1E0588C1BCD8} = {34070587-BFB3-4FD5-9B8B-54E817A4D2E2}
+		{63B1ABA0-CB53-449F-A1C0-62F3BA4ED634} = {990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}
+		{707BC037-2511-46DF-A82A-3EBA7D2FCD99} = {990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}
+		{8F80C967-073B-4079-B117-83A723E023EF} = {990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}
+		{5D44DD28-E910-4252-A434-A2668B0F49A6} = {990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}
+		{27A79C01-2BAB-461C-AB75-E4938D5E5E3C} = {990B6B0C-EB54-4893-ABE8-1E0588C1BCD8}
+	EndGlobalSection
+EndGlobal
