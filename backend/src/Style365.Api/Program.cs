@@ -1,3 +1,4 @@
+using Style365.Application;
 using Style365.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+
+// Add Application services
+builder.Services.AddApplication();
 
 // Add Infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);

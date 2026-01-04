@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Style365.Infrastructure.Data;
+using Style365.Infrastructure.Repositories;
+using Style365.Infrastructure.Repositories.Interfaces;
 
 namespace Style365.Infrastructure;
 
@@ -26,6 +28,17 @@ public static class DependencyInjection
                 options.EnableDetailedErrors();
             }
         });
+
+        // Repository Registration
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+        services.AddScoped<IWishlistRepository, WishlistRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
 
         return services;
     }
