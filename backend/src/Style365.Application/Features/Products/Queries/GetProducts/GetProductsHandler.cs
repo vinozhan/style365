@@ -2,7 +2,6 @@ using AutoMapper;
 using Style365.Application.Common.DTOs;
 using Style365.Application.Common.Interfaces;
 using Style365.Application.Common.Models;
-using Style365.Infrastructure.Repositories.Interfaces;
 
 namespace Style365.Application.Features.Products.Queries.GetProducts;
 

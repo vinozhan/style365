@@ -14,12 +14,26 @@ desktop.ini
 *.sln.docstates
 
 ##################################
-# Environment Variables (Secrets)
+# Environment Variables & Secrets
 ##################################
 .env
 .env.*
 .env.local
 !.env.example
+
+# AWS & Sensitive Files
+.aws/
+*.pem
+*.key
+*.pfx
+*.crt
+secrets.json
+appsettings.*.local.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
 ##################################
 # Node / Frontend (Next.js + Vite)
@@ -76,3 +90,51 @@ tmp/
 .cache/
 *.tmp
 *.temp
+
+##################################
+# JetBrains Rider
+##################################
+.idea/
+*.sln.iml
+_ReSharper*/
+*.DotSettings.user
+
+##################################
+# Visual Studio Code
+##################################
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+##################################
+# NuGet
+##################################
+*.nupkg
+*.snupkg
+.nuget/
+
+##################################
+# Azure Functions
+##################################
+local.settings.json
+
+##################################
+# Terraform
+##################################
+*.tfstate
+*.tfstate.*
+.terraform/
+
+##################################
+# Documentation
+##################################
+_site/
+.sass-cache/
+/docs/
+
+##################################
+# Benchmarking
+##################################
+BenchmarkDotNet.Artifacts/

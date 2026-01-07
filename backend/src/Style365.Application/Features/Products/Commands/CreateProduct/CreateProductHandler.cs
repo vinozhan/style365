@@ -4,7 +4,6 @@ using Style365.Application.Common.Interfaces;
 using Style365.Application.Common.Models;
 using Style365.Domain.Entities;
 using Style365.Domain.ValueObjects;
-using Style365.Infrastructure.Repositories.Interfaces;
 
 namespace Style365.Application.Features.Products.Commands.CreateProduct;
 

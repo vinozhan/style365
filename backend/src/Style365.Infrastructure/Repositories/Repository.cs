@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Style365.Domain.Common;
 using Style365.Infrastructure.Data;
-using Style365.Infrastructure.Repositories.Interfaces;
+using Style365.Application.Common.Interfaces;
 
 namespace Style365.Infrastructure.Repositories;
 

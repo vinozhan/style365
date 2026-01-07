@@ -1,6 +1,6 @@
 using Style365.Domain.Entities;
 
-namespace Style365.Infrastructure.Repositories.Interfaces;
+namespace Style365.Application.Common.Interfaces;
 
 public interface IProductReviewRepository : IRepository<ProductReview>
 {
