@@ -1,7 +1,7 @@
 using Style365.Domain.Entities;
 using Style365.Domain.Enums;
 
-namespace Style365.Infrastructure.Repositories.Interfaces;
+namespace Style365.Application.Common.Interfaces;
 
 public interface IPaymentRepository : IRepository<Payment>
 {

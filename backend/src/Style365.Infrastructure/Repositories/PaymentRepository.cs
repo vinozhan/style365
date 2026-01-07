@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Style365.Domain.Entities;
 using Style365.Domain.Enums;
 using Style365.Infrastructure.Data;
-using Style365.Infrastructure.Repositories.Interfaces;
+using Style365.Application.Common.Interfaces;
 
 namespace Style365.Infrastructure.Repositories;
 

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Style365.Domain.Common;
 
-namespace Style365.Infrastructure.Repositories.Interfaces;
+namespace Style365.Application.Common.Interfaces;
 
 public interface IRepository<T> where T : BaseEntity
 {
