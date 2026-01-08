@@ -103,7 +103,7 @@ public class OrderRepository : Repository<Order>, IOrderRepository
         if (endDate.HasValue)
             query = query.Where(o => o.CreatedAt <= endDate.Value);
 
-        return await query.SumAsync(o => o.Total.Amount, cancellationToken);
+        return await query.SumAsync(o => o.TotalAmount.Amount, cancellationToken);
     }
 
     public async Task<int> GetOrderCountAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
@@ -123,8 +123,16 @@ public class OrderRepository : Repository<Order>, IOrderRepository
     {
         return await _dbSet
             .Include(o => o.User)
-            .OrderByDescending(o => o.Total.Amount)
+            .OrderByDescending(o => o.TotalAmount.Amount)
             .Take(count)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Order?> GetLastOrderByYearAsync(int year, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(o => o.OrderNumber.Contains($"ORD-{year}-"))
+            .OrderByDescending(o => o.CreatedAt)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

@@ -13,6 +13,7 @@ public interface IUnitOfWork : IDisposable
     IWishlistRepository Wishlists { get; }
     IPaymentRepository Payments { get; }
     IProductReviewRepository ProductReviews { get; }
+    IRepository<ProductTag> ProductTags { get; }
 
     // Unit of Work operations
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

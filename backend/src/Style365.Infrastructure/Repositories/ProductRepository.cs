@@ -132,6 +132,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         decimal? minPrice = null,
         decimal? maxPrice = null,
         bool? inStock = null,
+        bool? featuredOnly = null,
         string? searchTerm = null,
         string? sortBy = null,
         bool ascending = true,
@@ -145,6 +146,9 @@ public class ProductRepository : Repository<Product>, IProductRepository
 
         if (!string.IsNullOrEmpty(brand))
             query = query.Where(p => p.Brand == brand);
+
+        if (featuredOnly == true)
+            query = query.Where(p => p.IsFeatured);
 
         if (minPrice.HasValue)
             query = query.Where(p => p.Price.Amount >= minPrice.Value);

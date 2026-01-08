@@ -28,6 +28,7 @@ public class GetProductsHandler : IQueryHandler<GetProductsQuery, Result<Paginat
                 request.MinPrice,
                 request.MaxPrice,
                 request.InStock,
+                request.FeaturedOnly,
                 request.SearchTerm,
                 request.SortBy,
                 request.Ascending,

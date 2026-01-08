@@ -14,6 +14,7 @@ public interface IOrderRepository : IRepository<Order>
     Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Order>> GetRecentOrdersAsync(int count, CancellationToken cancellationToken = default);
     Task<bool> IsOrderNumberUniqueAsync(string orderNumber, Guid? excludeOrderId = null, CancellationToken cancellationToken = default);
+    Task<Order?> GetLastOrderByYearAsync(int year, CancellationToken cancellationToken = default);
     
     // Analytics methods
     Task<decimal> GetTotalSalesAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default);

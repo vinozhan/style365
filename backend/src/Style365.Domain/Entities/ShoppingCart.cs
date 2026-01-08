@@ -15,15 +15,32 @@ public class ShoppingCart : BaseEntity
 
     private ShoppingCart() { }
 
-    public ShoppingCart(Guid? userId, string? sessionId)
+    public ShoppingCart(Guid userId)
     {
-        if (userId == null && string.IsNullOrWhiteSpace(sessionId))
-            throw new ArgumentException("Either UserId or SessionId must be provided");
-
         UserId = userId;
-        SessionId = sessionId?.Trim();
+        SessionId = null;
         LastModified = DateTime.UtcNow;
-        ExpiresAt = userId == null ? DateTime.UtcNow.AddDays(7) : null; // Guest carts expire in 7 days
+        ExpiresAt = null; // User carts don't expire
+    }
+
+    public ShoppingCart(string sessionId)
+    {
+        if (string.IsNullOrWhiteSpace(sessionId))
+            throw new ArgumentException("SessionId cannot be empty", nameof(sessionId));
+
+        UserId = null;
+        SessionId = sessionId.Trim();
+        LastModified = DateTime.UtcNow;
+        ExpiresAt = DateTime.UtcNow.AddDays(7); // Guest carts expire in 7 days
+    }
+
+    public void AddItem(CartItem cartItem)
+    {
+        if (cartItem == null)
+            throw new ArgumentNullException(nameof(cartItem));
+
+        _items.Add(cartItem);
+        UpdateLastModified();
     }
 
     public void AddItem(Guid productId, int quantity, Guid? variantId = null)
@@ -44,6 +61,16 @@ public class ShoppingCart : BaseEntity
         }
 
         UpdateLastModified();
+    }
+
+    public Money GetTotal()
+    {
+        if (!_items.Any())
+            return Money.Create(0, "USD"); // Default currency
+
+        var total = _items.Sum(item => item.GetSubtotal().Amount);
+        var currency = _items.First().UnitPrice.Currency;
+        return Money.Create(total, currency);
     }
 
     public void UpdateItemQuantity(Guid productId, int newQuantity, Guid? variantId = null)

@@ -76,7 +76,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
                 .IsRequired();
         });
 
-        builder.OwnsOne(o => o.Total, money =>
+        builder.OwnsOne(o => o.TotalAmount, money =>
         {
             money.Property(m => m.Amount)
                 .HasColumnName("Total")

@@ -17,4 +17,5 @@ public record GetProductsQuery : IQuery<Result<PaginatedResult<ProductDto>>>
     public string? SortBy { get; init; } = "name";
     public bool Ascending { get; init; } = true;
     public bool ActiveOnly { get; init; } = true;
+    public bool FeaturedOnly { get; init; } = false;
 }

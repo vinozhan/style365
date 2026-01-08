@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Style365.Infrastructure.Data;
 using Style365.Application.Common.Interfaces;
+using Style365.Domain.Entities;
 
 namespace Style365.Infrastructure.Repositories;
 
@@ -17,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     private IWishlistRepository? _wishlists;
     private IPaymentRepository? _payments;
     private IProductReviewRepository? _productReviews;
+    private IRepository<ProductTag>? _productTags;
 
     public UnitOfWork(Style365DbContext context)
     {
@@ -31,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IWishlistRepository Wishlists => _wishlists ??= new WishlistRepository(_context);
     public IPaymentRepository Payments => _payments ??= new PaymentRepository(_context);
     public IProductReviewRepository ProductReviews => _productReviews ??= new ProductReviewRepository(_context);
+    public IRepository<ProductTag> ProductTags => _productTags ??= new Repository<ProductTag>(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

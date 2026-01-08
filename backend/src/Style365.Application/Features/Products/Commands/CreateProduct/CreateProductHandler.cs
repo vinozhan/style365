@@ -69,6 +69,46 @@ public class CreateProductHandler : ICommandHandler<CreateProductCommand, Result
                 product.Deactivate();
             }
 
+            // Add tags
+            foreach (var tagId in request.TagIds)
+            {
+                var tag = await _unitOfWork.ProductTags.GetByIdAsync(tagId, cancellationToken);
+                if (tag != null)
+                {
+                    product.AddTag(tag);
+                }
+            }
+
+            // Add variants
+            foreach (var variantDto in request.Variants)
+            {
+                var variantPrice = Money.Create(variantDto.Price, request.Currency);
+                var variant = new ProductVariant(
+                    variantDto.Name,
+                    variantDto.SKU,
+                    variantPrice,
+                    variantDto.StockQuantity
+                );
+                variant.UpdateAttributes(variantDto.Size, variantDto.Color, variantDto.Material, variantDto.Style);
+                if (!variantDto.IsActive)
+                {
+                    variant.Deactivate();
+                }
+                product.AddVariant(variant);
+            }
+
+            // Add images
+            foreach (var imageDto in request.Images)
+            {
+                var image = new ProductImage(
+                    imageDto.ImageUrl,
+                    imageDto.AltText,
+                    imageDto.DisplayOrder,
+                    imageDto.IsPrimary
+                );
+                product.AddImage(image);
+            }
+
             // Add to repository
             await _unitOfWork.Products.AddAsync(product, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
