@@ -171,8 +171,8 @@ public class Product : BaseEntity
 
     public void AddVariant(ProductVariant variant)
     {
-        if (_variants.Any(v => v.SKU == variant.SKU))
-            throw new InvalidOperationException($"A variant with SKU {variant.SKU} already exists");
+        if (_variants.Any(v => v.Sku == variant.Sku))
+            throw new InvalidOperationException($"A variant with SKU {variant.Sku} already exists");
         
         _variants.Add(variant);
         UpdateTimestamp();

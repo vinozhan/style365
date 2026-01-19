@@ -67,6 +67,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Cre
         );
 
         // Create billing address (use shipping if not provided)
+        // IMPORTANT: Must create separate Address instance - EF owned entities cannot be shared
         Address billingAddress;
         if (request.BillingAddress != null)
         {
@@ -81,34 +82,44 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Cre
         }
         else
         {
-            billingAddress = shippingAddress;
+            // Create a separate Address instance even if same as shipping
+            billingAddress = Address.Create(
+                request.ShippingAddress.AddressLine1,
+                request.ShippingAddress.AddressLine2,
+                request.ShippingAddress.City,
+                request.ShippingAddress.StateProvince,
+                request.ShippingAddress.PostalCode,
+                request.ShippingAddress.Country
+            );
         }
 
         // Generate order number
         var orderNumber = await GenerateOrderNumber();
 
-        // Calculate total
+        // Calculate total - create a new Money instance for the order
         var cartTotal = cart.GetTotal();
+        var orderTotal = Money.Create(cartTotal.Amount, cartTotal.Currency);
 
         // Create order
         var order = new Order(
             orderNumber,
             request.UserId,
-            cartTotal,
+            orderTotal,
             shippingAddress,
             billingAddress,
             request.CustomerEmail,
             request.CustomerPhone
         );
 
-        // Add order items
+        // Add order items - create new Money instances for each item's unit price
         foreach (var cartItem in cart.Items)
         {
+            var itemUnitPrice = Money.Create(cartItem.UnitPrice.Amount, cartItem.UnitPrice.Currency);
             var orderItem = new OrderItem(
                 cartItem.ProductId,
                 cartItem.ProductVariantId,
                 cartItem.Quantity,
-                cartItem.UnitPrice
+                itemUnitPrice
             );
             order.AddItem(orderItem);
         }
@@ -119,12 +130,20 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Cre
             order.AddNotes(request.OrderNotes);
         }
 
+        // Reserve inventory
+        await ReserveInventory(cart, cancellationToken);
+
+        // Save order FIRST (important: must save before creating Payment reference)
+        await _unitOfWork.Orders.AddAsync(order, cancellationToken);
+
         // Create payment record if payment method is not Cash on Delivery
+        // Note: Payment is created AFTER order to ensure proper entity tracking
         if (request.PaymentMethod != PaymentMethod.CashOnDelivery)
         {
+            var paymentAmount = Money.Create(cartTotal.Amount, cartTotal.Currency);
             var payment = new Payment(
                 order.Id,
-                cartTotal,
+                paymentAmount,
                 request.PaymentMethod
             );
 
@@ -140,12 +159,6 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Cre
             // For COD orders, set status to confirmed
             order.Confirm();
         }
-
-        // Reserve inventory
-        await ReserveInventory(cart, cancellationToken);
-
-        // Save order
-        await _unitOfWork.Orders.AddAsync(order, cancellationToken);
 
         // Clear the cart
         cart.ClearCart();

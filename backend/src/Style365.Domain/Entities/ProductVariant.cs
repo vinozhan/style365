@@ -42,7 +42,6 @@ public class ProductVariant : BaseEntity
         UpdateTimestamp();
     }
 
-    public string SKU => Sku; // Add property alias for consistency
 
     public void UpdateBasicInfo(string name, string? color, string? size, string? material)
     {

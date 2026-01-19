@@ -85,7 +85,7 @@ public class CreateProductHandler : ICommandHandler<CreateProductCommand, Result
                 var variantPrice = Money.Create(variantDto.Price, request.Currency);
                 var variant = new ProductVariant(
                     variantDto.Name,
-                    variantDto.SKU,
+                    variantDto.Sku,
                     variantPrice,
                     variantDto.StockQuantity
                 );

@@ -33,7 +33,7 @@ public record CreateProductCommand : ICommand<Result<ProductDto>>
 public class CreateProductVariantDto
 {
     public string Name { get; set; } = string.Empty;
-    public string SKU { get; set; } = string.Empty;
+    public string Sku { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int StockQuantity { get; set; }
     public string? Size { get; set; }

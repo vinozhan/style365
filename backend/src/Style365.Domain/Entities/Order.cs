@@ -44,7 +44,8 @@ public class Order : BaseEntity
         CustomerEmail = customerEmail;
         CustomerPhone = customerPhone;
         CreatedAt = DateTime.UtcNow;
-        Subtotal = totalAmount;
+        // Create separate Money instances - EF owned entities cannot be shared between properties
+        Subtotal = Money.Create(totalAmount.Amount, totalAmount.Currency);
         TaxAmount = Money.Create(0, totalAmount.Currency);
         ShippingAmount = Money.Create(0, totalAmount.Currency);
         DiscountAmount = Money.Create(0, totalAmount.Currency);

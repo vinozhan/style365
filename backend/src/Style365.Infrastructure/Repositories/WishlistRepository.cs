@@ -24,6 +24,12 @@ public class WishlistRepository : Repository<Wishlist>, IWishlistRepository
             .FirstOrDefaultAsync(w => w.UserId == userId && w.IsDefault, cancellationToken);
     }
 
+    public async Task<Wishlist?> GetDefaultByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .FirstOrDefaultAsync(w => w.UserId == userId && w.IsDefault, cancellationToken);
+    }
+
     public async Task<Wishlist?> GetByIdWithItemsAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet

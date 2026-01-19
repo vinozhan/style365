@@ -17,7 +17,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder.Property(o => o.UserId)
-            .IsRequired();
+            .IsRequired(false);  // Allow guest orders (no user account)
 
         builder.Property(o => o.Status)
             .HasConversion<string>()

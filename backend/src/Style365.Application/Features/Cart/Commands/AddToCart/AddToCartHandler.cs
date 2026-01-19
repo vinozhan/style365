@@ -45,16 +45,27 @@ public class AddToCartHandler : IRequestHandler<AddToCartCommand, Result<AddToCa
         }
 
         // Find or create shopping cart
-        ShoppingCart cart;
+        // IMPORTANT: Must include Items to properly track changes to the cart
+        ShoppingCart? cart;
+        bool isNewCart = false;
+
         if (request.UserId.HasValue)
         {
-            cart = await _unitOfWork.ShoppingCarts.GetByUserIdAsync(request.UserId.Value, cancellationToken) ??
-                   new ShoppingCart(request.UserId.Value);
+            cart = await _unitOfWork.ShoppingCarts.GetByUserIdWithItemsAsync(request.UserId.Value, cancellationToken);
+            if (cart == null)
+            {
+                cart = new ShoppingCart(request.UserId.Value);
+                isNewCart = true;
+            }
         }
         else
         {
-            cart = await _unitOfWork.ShoppingCarts.GetBySessionIdAsync(request.SessionId!, cancellationToken) ??
-                   new ShoppingCart(request.SessionId!);
+            cart = await _unitOfWork.ShoppingCarts.GetBySessionIdWithItemsAsync(request.SessionId!, cancellationToken);
+            if (cart == null)
+            {
+                cart = new ShoppingCart(request.SessionId!);
+                isNewCart = true;
+            }
         }
 
         // Check if item already exists in cart
@@ -79,21 +90,22 @@ public class AddToCartHandler : IRequestHandler<AddToCartCommand, Result<AddToCa
             // Add new item to cart
             var unitPrice = variant?.Price ?? product.Price;
             var cartItem = new CartItem(
+                cart.Id,
                 request.ProductId,
-                request.VariantId,
                 request.Quantity,
-                unitPrice
+                request.VariantId
             );
-            
+            cartItem.UpdateUnitPrice(unitPrice);
+
             cart.AddItem(cartItem);
         }
 
         // Save cart
-        if (cart.Id == Guid.Empty)
+        if (isNewCart)
         {
             await _unitOfWork.ShoppingCarts.AddAsync(cart, cancellationToken);
         }
-        
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var response = new AddToCartResponse

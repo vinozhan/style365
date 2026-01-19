@@ -122,8 +122,9 @@ if (authSettings?.Cognito != null)
         {
             ValidateIssuer = true,
             ValidIssuer = authSettings.Cognito.Authority,
-            ValidateAudience = true,
-            ValidAudience = authSettings.Cognito.UserPoolClientId,
+            ValidateAudience = false, // Cognito Access Tokens use client_id claim, not aud
+            //ValidateAudience = true,
+            //ValidAudience = authSettings.Cognito.UserPoolClientId,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero
