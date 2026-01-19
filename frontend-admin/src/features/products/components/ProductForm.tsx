@@ -17,13 +17,13 @@ const productSchema = z.object({
   description: z.string().optional(),
   shortDescription: z.string().max(500).optional(),
   sku: z.string().min(1, 'SKU is required').max(50),
-  price: z.coerce.number().min(0, 'Price must be positive'),
-  compareAtPrice: z.coerce.number().min(0).optional().nullable(),
-  costPrice: z.coerce.number().min(0).optional().nullable(),
-  stockQuantity: z.coerce.number().int().min(0, 'Stock must be non-negative'),
-  lowStockThreshold: z.coerce.number().int().min(0).default(10),
-  isActive: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
+  price: z.number().min(0, 'Price must be positive'),
+  compareAtPrice: z.number().min(0).optional(),
+  costPrice: z.number().min(0).optional(),
+  stockQuantity: z.number().int().min(0, 'Stock must be non-negative'),
+  lowStockThreshold: z.number().int().min(0),
+  isActive: z.boolean(),
+  isFeatured: z.boolean(),
   categoryId: z.string().optional(),
   tags: z.string().optional(),
   metaTitle: z.string().max(70).optional(),
@@ -32,10 +32,28 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
+export interface ProductFormOutput {
+  name: string;
+  description?: string;
+  shortDescription?: string;
+  sku: string;
+  price: number;
+  compareAtPrice?: number;
+  costPrice?: number;
+  stockQuantity: number;
+  lowStockThreshold: number;
+  isActive: boolean;
+  isFeatured: boolean;
+  categoryId?: string;
+  tags: string[];
+  metaTitle?: string;
+  metaDescription?: string;
+}
+
 interface ProductFormProps {
   product?: Product;
   categories: Category[];
-  onSubmit: (data: ProductFormData & { tags: string[] }) => void;
+  onSubmit: (data: ProductFormOutput) => void;
   isLoading?: boolean;
 }
 
@@ -54,8 +72,8 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
       shortDescription: product?.shortDescription || '',
       sku: product?.sku || '',
       price: product?.price || 0,
-      compareAtPrice: product?.compareAtPrice || null,
-      costPrice: product?.costPrice || null,
+      compareAtPrice: product?.compareAtPrice || undefined,
+      costPrice: product?.costPrice || undefined,
       stockQuantity: product?.stockQuantity || 0,
       lowStockThreshold: product?.lowStockThreshold || 10,
       isActive: product?.isActive ?? true,
@@ -75,7 +93,24 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
     const tags = data.tags
       ? data.tags.split(',').map((t) => t.trim()).filter(Boolean)
       : [];
-    onSubmit({ ...data, tags });
+    const output: ProductFormOutput = {
+      name: data.name,
+      description: data.description,
+      shortDescription: data.shortDescription,
+      sku: data.sku,
+      price: data.price,
+      compareAtPrice: data.compareAtPrice,
+      costPrice: data.costPrice,
+      stockQuantity: data.stockQuantity,
+      lowStockThreshold: data.lowStockThreshold,
+      isActive: data.isActive,
+      isFeatured: data.isFeatured,
+      categoryId: data.categoryId,
+      tags,
+      metaTitle: data.metaTitle,
+      metaDescription: data.metaDescription,
+    };
+    onSubmit(output);
   };
 
   return (
@@ -119,18 +154,18 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="price">Price (LKR) *</Label>
-                  <Input id="price" type="number" step="0.01" {...register('price')} />
+                  <Input id="price" type="number" step="0.01" {...register('price', { valueAsNumber: true })} />
                   {errors.price && <p className="text-sm text-red-600">{errors.price.message}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="compareAtPrice">Compare at Price</Label>
-                  <Input id="compareAtPrice" type="number" step="0.01" {...register('compareAtPrice')} />
+                  <Input id="compareAtPrice" type="number" step="0.01" {...register('compareAtPrice', { valueAsNumber: true })} />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="costPrice">Cost Price</Label>
-                  <Input id="costPrice" type="number" step="0.01" {...register('costPrice')} />
+                  <Input id="costPrice" type="number" step="0.01" {...register('costPrice', { valueAsNumber: true })} />
                 </div>
               </div>
             </CardContent>
@@ -151,7 +186,7 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
 
                 <div className="space-y-2">
                   <Label htmlFor="stockQuantity">Stock Quantity *</Label>
-                  <Input id="stockQuantity" type="number" {...register('stockQuantity')} />
+                  <Input id="stockQuantity" type="number" {...register('stockQuantity', { valueAsNumber: true })} />
                   {errors.stockQuantity && (
                     <p className="text-sm text-red-600">{errors.stockQuantity.message}</p>
                   )}
@@ -159,7 +194,7 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
 
                 <div className="space-y-2">
                   <Label htmlFor="lowStockThreshold">Low Stock Threshold</Label>
-                  <Input id="lowStockThreshold" type="number" {...register('lowStockThreshold')} />
+                  <Input id="lowStockThreshold" type="number" {...register('lowStockThreshold', { valueAsNumber: true })} />
                 </div>
               </div>
             </CardContent>

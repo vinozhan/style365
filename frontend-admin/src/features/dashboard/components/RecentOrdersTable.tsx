@@ -5,10 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from '@/components/common/StatusBadge';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils';
-import type { Order } from '@/types';
+import type { RecentOrderSummary, OrderStatus } from '@/types';
 
 interface RecentOrdersTableProps {
-  orders: Order[];
+  orders: RecentOrderSummary[];
   isLoading?: boolean;
 }
 
@@ -48,7 +48,7 @@ export function RecentOrdersTable({ orders, isLoading }: RecentOrdersTableProps)
                   <TableCell className="font-medium">#{order.orderNumber}</TableCell>
                   <TableCell>{order.customerName}</TableCell>
                   <TableCell>
-                    <OrderStatusBadge status={order.status} />
+                    <OrderStatusBadge status={order.status as OrderStatus} />
                   </TableCell>
                   <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                   <TableCell className="text-slate-500">{formatRelativeTime(order.createdAt)}</TableCell>

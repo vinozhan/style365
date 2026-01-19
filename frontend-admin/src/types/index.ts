@@ -146,12 +146,12 @@ export interface Customer {
   email: string;
   firstName: string;
   lastName: string;
-  phone?: string;
-  isEmailVerified: boolean;
+  phoneNumber?: string;
+  isActive: boolean;
   ordersCount: number;
   totalSpent: number;
   createdAt: string;
-  lastLoginAt?: string;
+  lastOrderDate?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -170,6 +170,24 @@ export interface ApiError {
   statusCode: number;
 }
 
+export interface RecentOrderSummary {
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  totalAmount: number;
+  status: string;
+  createdAt: string;
+}
+
+export interface TopProduct {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  totalSold: number;
+  revenue: number;
+}
+
 export interface DashboardStats {
   totalOrders: number;
   totalRevenue: number;
@@ -177,6 +195,7 @@ export interface DashboardStats {
   totalCustomers: number;
   lowStockCount: number;
   pendingOrdersCount: number;
-  recentOrders: Order[];
+  recentOrders: RecentOrderSummary[];
+  topProducts?: TopProduct[];
   salesByMonth: { month: string; revenue: number; orders: number }[];
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-react';
+import { Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

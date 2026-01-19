@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
-import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -104,7 +103,7 @@ export function DataTable<TData, TValue>({
 }
 
 // Helper function to create sortable column header
-export function createSortableHeader<T>(label: string) {
+export function createSortableHeader(label: string) {
   return ({ column }: { column: { toggleSorting: (desc: boolean) => void; getIsSorted: () => false | 'asc' | 'desc' } }) => (
     <Button
       variant="ghost"
