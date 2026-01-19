@@ -27,6 +27,7 @@ public interface IProductRepository : IRepository<Product>
         decimal? minPrice = null,
         decimal? maxPrice = null,
         bool? inStock = null,
+        bool? featuredOnly = null,
         string? searchTerm = null,
         string? sortBy = null,
         bool ascending = true,

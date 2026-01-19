@@ -81,6 +81,14 @@ public class User : BaseEntity
                 "CognitoUserId already set and cannot be changed.");
         }
         CognitoUserId = cognitoUserId;
+
+        // Use Cognito sub (UUID) as the User's primary key
+        // This ensures JWT sub = User.Id = FK references across all entities
+        if (Guid.TryParse(cognitoUserId, out var cognitoGuid))
+        {
+            Id = cognitoGuid;
+        }
+
         UpdateTimestamp();
     }
 

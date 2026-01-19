@@ -23,17 +23,25 @@ public class ProductVariant : BaseEntity
 
     private ProductVariant() { }
 
-    public ProductVariant(Guid productId, string name, string sku, string? color = null, string? size = null)
+    public ProductVariant(string name, string sku, Money price, int stockQuantity = 0)
     {
-        ProductId = productId;
         Name = ValidateName(name);
         Sku = ValidateSku(sku);
-        Color = color?.Trim();
-        Size = size?.Trim();
+        Price = price;
+        StockQuantity = stockQuantity;
         TrackQuantity = true;
         IsActive = true;
-        StockQuantity = 0;
     }
+
+    public void UpdateAttributes(string? size, string? color, string? material, string? style)
+    {
+        Size = size?.Trim();
+        Color = color?.Trim();
+        Material = material?.Trim();
+        // Note: style field may need to be added if required
+        UpdateTimestamp();
+    }
+
 
     public void UpdateBasicInfo(string name, string? color, string? size, string? material)
     {

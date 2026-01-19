@@ -6,6 +6,7 @@ public interface IUnitOfWork : IDisposable
 {
     // Repository properties
     IUserRepository Users { get; }
+    IUserProfileRepository UserProfiles { get; }
     ICategoryRepository Categories { get; }
     IProductRepository Products { get; }
     IOrderRepository Orders { get; }
@@ -13,6 +14,8 @@ public interface IUnitOfWork : IDisposable
     IWishlistRepository Wishlists { get; }
     IPaymentRepository Payments { get; }
     IProductReviewRepository ProductReviews { get; }
+    IRepository<ProductTag> ProductTags { get; }
+    IRepository<OrderItem> OrderItems { get; }
 
     // Unit of Work operations
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

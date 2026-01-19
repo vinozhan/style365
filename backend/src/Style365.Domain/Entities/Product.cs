@@ -154,6 +154,64 @@ public class Product : BaseEntity
     public bool IsLowStock() => TrackQuantity && StockQuantity <= LowStockThreshold;
     public decimal? GetDiscountPercentage() => ComparePrice?.Amount > 0 ? ((ComparePrice.Amount - Price.Amount) / ComparePrice.Amount) * 100 : null;
 
+    public void AddTag(ProductTag tag)
+    {
+        if (_tags.Any(t => t.Id == tag.Id))
+            return;
+        
+        _tags.Add(tag);
+        UpdateTimestamp();
+    }
+
+    public void RemoveTag(ProductTag tag)
+    {
+        _tags.Remove(tag);
+        UpdateTimestamp();
+    }
+
+    public void AddVariant(ProductVariant variant)
+    {
+        if (_variants.Any(v => v.Sku == variant.Sku))
+            throw new InvalidOperationException($"A variant with SKU {variant.Sku} already exists");
+        
+        _variants.Add(variant);
+        UpdateTimestamp();
+    }
+
+    public void RemoveVariant(ProductVariant variant)
+    {
+        _variants.Remove(variant);
+        UpdateTimestamp();
+    }
+
+    public void AddImage(ProductImage image)
+    {
+        // If this is marked as primary, unset other primary images
+        if (image.IsPrimary)
+        {
+            foreach (var img in _images)
+            {
+                img.UnsetPrimary();
+            }
+        }
+        
+        _images.Add(image);
+        UpdateTimestamp();
+    }
+
+    public void RemoveImage(ProductImage image)
+    {
+        _images.Remove(image);
+        
+        // If we removed the primary image and have other images, make the first one primary
+        if (image.IsPrimary && _images.Any())
+        {
+            _images.First().SetPrimary();
+        }
+        
+        UpdateTimestamp();
+    }
+
     private static string ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

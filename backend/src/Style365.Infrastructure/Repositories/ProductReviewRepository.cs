@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Style365.Domain.Entities;
+using Style365.Domain.Enums;
 using Style365.Infrastructure.Data;
 using Style365.Application.Common.Interfaces;
 
@@ -32,7 +33,7 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
     public async Task<IEnumerable<ProductReview>> GetApprovedReviewsByProductAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Where(r => r.ProductId == productId && r.IsApproved)
+            .Where(r => r.ProductId == productId && r.Status == ReviewStatus.Published)
             .Include(r => r.User)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -41,7 +42,7 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
     public async Task<IEnumerable<ProductReview>> GetPendingReviewsAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Where(r => !r.IsApproved)
+            .Where(r => r.Status != ReviewStatus.Published)
             .Include(r => r.User)
             .Include(r => r.Product)
             .OrderBy(r => r.CreatedAt)
@@ -54,16 +55,28 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
             .FirstOrDefaultAsync(r => r.UserId == userId && r.ProductId == productId, cancellationToken);
     }
 
+    public async Task<ProductReview?> GetByUserAndProductAsync(Guid userId, Guid productId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.ProductId == productId, cancellationToken);
+    }
+
     public async Task<bool> HasUserReviewedProductAsync(Guid userId, Guid productId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .AnyAsync(r => r.UserId == userId && r.ProductId == productId, cancellationToken);
     }
 
+    public async Task<int> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .CountAsync(r => r.UserId == userId, cancellationToken);
+    }
+
     public async Task<double> GetAverageRatingForProductAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         var reviews = await _dbSet
-            .Where(r => r.ProductId == productId && r.IsApproved)
+            .Where(r => r.ProductId == productId && r.Status == ReviewStatus.Published)
             .ToListAsync(cancellationToken);
 
         return reviews.Any() ? reviews.Average(r => r.Rating) : 0;
@@ -74,7 +87,7 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
         var query = _dbSet.Where(r => r.ProductId == productId);
         
         if (approvedOnly)
-            query = query.Where(r => r.IsApproved);
+            query = query.Where(r => r.Status == ReviewStatus.Published);
 
         return await query.CountAsync(cancellationToken);
     }
@@ -82,7 +95,7 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
     public async Task<IEnumerable<ProductReview>> GetVerifiedPurchaseReviewsAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Where(r => r.ProductId == productId && r.IsVerifiedPurchase && r.IsApproved)
+            .Where(r => r.ProductId == productId && r.IsVerifiedPurchase && r.Status == ReviewStatus.Published)
             .Include(r => r.User)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -103,7 +116,7 @@ public class ProductReviewRepository : Repository<ProductReview>, IProductReview
             .AsQueryable();
 
         if (approvedOnly)
-            query = query.Where(r => r.IsApproved);
+            query = query.Where(r => r.Status == ReviewStatus.Published);
 
         var totalCount = await query.CountAsync(cancellationToken);
 

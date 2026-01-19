@@ -21,22 +21,35 @@ public class Category : BaseEntity
 
     private Category() {}
     
-    public Category(string name, string? description = null, Guid? parentCategoryId = null)
+    public Category(string name, string slug, string? description = null, string? imageUrl = null, 
+        bool isActive = true, int sortOrder = 0, Guid? parentCategoryId = null)
     {
         Name = ValidateName(name);
-        Slug = GenerateSlug(name);
-        Description = description?.Trim();
-        ParentCategoryId = parentCategoryId;
-        IsActive = true;
-        SortOrder = 0;
-    }
-
-    public void UpdateDetails(string name, string? description, string? imageUrl)
-    {
-        Name = ValidateName(name);
-        Slug = GenerateSlug(name);
+        Slug = slug;
         Description = description?.Trim();
         ImageUrl = imageUrl?.Trim();
+        IsActive = isActive;
+        SortOrder = sortOrder;
+        ParentCategoryId = parentCategoryId;
+    }
+
+    public void Update(string name, string? description, string? imageUrl, bool isActive, int sortOrder, Guid? parentCategoryId)
+    {
+        Name = ValidateName(name);
+        Description = description?.Trim();
+        ImageUrl = imageUrl?.Trim();
+        IsActive = isActive;
+        SortOrder = sortOrder;
+        ParentCategoryId = parentCategoryId;
+        UpdateTimestamp();
+    }
+
+    public void UpdateSlug(string slug)
+    {
+        if (string.IsNullOrWhiteSpace(slug))
+            throw new ArgumentException("Slug cannot be empty", nameof(slug));
+        
+        Slug = slug.Trim().ToLowerInvariant();
         UpdateTimestamp();
     }
 

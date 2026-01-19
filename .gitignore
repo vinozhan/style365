@@ -133,6 +133,7 @@ local.settings.json
 _site/
 .sass-cache/
 /docs/
+CLAUDE.md
 
 ##################################
 # Benchmarking

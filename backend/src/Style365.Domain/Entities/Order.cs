@@ -7,15 +7,17 @@ namespace Style365.Domain.Entities;
 public class Order : BaseEntity
 {
     public string OrderNumber { get; private set; } = null!;
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
     public OrderStatus Status { get; private set; }
+    public Money TotalAmount { get; private set; } = null!;
     public Money Subtotal { get; private set; } = null!;
     public Money TaxAmount { get; private set; } = null!;
     public Money ShippingAmount { get; private set; } = null!;
     public Money DiscountAmount { get; private set; } = null!;
-    public Money Total { get; private set; } = null!;
     public Address ShippingAddress { get; private set; } = null!;
     public Address BillingAddress { get; private set; } = null!;
+    public string CustomerEmail { get; private set; } = null!;
+    public string? CustomerPhone { get; private set; }
     public string? Notes { get; private set; }
     public DateTime? ShippedAt { get; private set; }
     public DateTime? DeliveredAt { get; private set; }
@@ -31,18 +33,31 @@ public class Order : BaseEntity
 
     private Order(){}
 
-    public Order(Guid userId, Address shippingAddress, Address billingAddress)
+    public Order(string orderNumber, Guid? userId, Money totalAmount, Address shippingAddress, Address billingAddress, string customerEmail, string? customerPhone = null)
     {
-        OrderNumber = GenerateOrderNumber();
+        OrderNumber = orderNumber;
         UserId = userId;
+        TotalAmount = totalAmount;
         Status = OrderStatus.Pending;
         ShippingAddress = shippingAddress;
         BillingAddress = billingAddress;
-        Subtotal = Money.Zero();
-        TaxAmount = Money.Zero();
-        ShippingAmount = Money.Zero();
-        DiscountAmount = Money.Zero();
-        Total = Money.Zero();
+        CustomerEmail = customerEmail;
+        CustomerPhone = customerPhone;
+        CreatedAt = DateTime.UtcNow;
+        // Create separate Money instances - EF owned entities cannot be shared between properties
+        Subtotal = Money.Create(totalAmount.Amount, totalAmount.Currency);
+        TaxAmount = Money.Create(0, totalAmount.Currency);
+        ShippingAmount = Money.Create(0, totalAmount.Currency);
+        DiscountAmount = Money.Create(0, totalAmount.Currency);
+    }
+
+    public void AddItem(OrderItem orderItem)
+    {
+        if (Status != OrderStatus.Pending)
+            throw new InvalidOperationException("Cannot modify confirmed order");
+
+        _items.Add(orderItem);
+        UpdateTimestamp();
     }
 
     public void AddItem(Product product, int quantity, Money unitPrice, ProductVariant? variant = null)
@@ -66,7 +81,34 @@ public class Order : BaseEntity
             _items.Add(orderItem);
         }
 
-        RecalculateTotals();
+        UpdateTimestamp();
+    }
+
+    public void Confirm()
+    {
+        if (Status != OrderStatus.Pending)
+            throw new InvalidOperationException("Only pending orders can be confirmed");
+
+        Status = OrderStatus.Confirmed;
+        UpdateTimestamp();
+    }
+
+    public void AddNotes(string notes)
+    {
+        Notes = notes?.Trim();
+        UpdateTimestamp();
+    }
+
+    public void Cancel(string reason)
+    {
+        if (Status == OrderStatus.Shipped || Status == OrderStatus.Delivered)
+            throw new InvalidOperationException("Cannot cancel shipped or delivered orders");
+
+        if (Status == OrderStatus.Cancelled)
+            throw new InvalidOperationException("Order is already cancelled");
+
+        Status = OrderStatus.Cancelled;
+        Notes = string.IsNullOrEmpty(Notes) ? $"Cancelled: {reason}" : $"{Notes}\nCancelled: {reason}";
         UpdateTimestamp();
     }
 
@@ -131,15 +173,6 @@ public class Order : BaseEntity
         UpdateTimestamp();
     }
 
-    public void Confirm()
-    {
-        if (Status != OrderStatus.Pending)
-            throw new InvalidOperationException("Only pending orders can be confirmed");
-
-        Status = OrderStatus.Confirmed;
-        UpdateTimestamp();
-    }
-
     public void StartProcessing()
     {
         if (Status != OrderStatus.Confirmed)
@@ -180,27 +213,13 @@ public class Order : BaseEntity
         UpdateTimestamp();
     }
 
-    public void Cancel()
-    {
-        if (Status == OrderStatus.Delivered || Status == OrderStatus.Shipped)
-            throw new InvalidOperationException("Cannot cancel delivered or shipped orders");
-
-        Status = OrderStatus.Cancelled;
-        UpdateTimestamp();
-    }
-
-    public void AddNotes(string notes)
-    {
-        Notes = notes?.Trim();
-        UpdateTimestamp();
-    }
 
     public int GetTotalItems() => _items.Sum(i => i.Quantity);
 
     private void RecalculateTotals()
     {
         Subtotal = _items.Aggregate(Money.Zero(), (total, item) => total + item.GetLineTotal());
-        Total = Subtotal + TaxAmount + ShippingAmount - DiscountAmount;
+        TotalAmount = Subtotal + TaxAmount + ShippingAmount - DiscountAmount;
     }
 
     private static string GenerateOrderNumber()

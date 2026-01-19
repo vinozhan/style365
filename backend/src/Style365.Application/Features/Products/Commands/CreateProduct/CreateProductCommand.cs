@@ -25,4 +25,28 @@ public record CreateProductCommand : ICommand<Result<ProductDto>>
     public string? MetaTitle { get; init; }
     public string? MetaDescription { get; init; }
     public Guid CategoryId { get; init; }
+    public List<Guid> TagIds { get; init; } = new();
+    public List<CreateProductVariantDto> Variants { get; init; } = new();
+    public List<CreateProductImageDto> Images { get; init; } = new();
+}
+
+public class CreateProductVariantDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Sku { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int StockQuantity { get; set; }
+    public string? Size { get; set; }
+    public string? Color { get; set; }
+    public string? Material { get; set; }
+    public string? Style { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public class CreateProductImageDto
+{
+    public string ImageUrl { get; set; } = string.Empty;
+    public string? AltText { get; set; }
+    public int DisplayOrder { get; set; }
+    public bool IsPrimary { get; set; }
 }

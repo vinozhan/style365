@@ -111,13 +111,40 @@ public class CognitoAuthenticationService : IAuthenticationService
                 return Result.Failure<AuthenticationResult>("New password required");
             }
 
-            // Get user from our database
-            var emailObj = Email.Create(email);
-            var user = await _unitOfWork.Users.GetByEmailAsync(emailObj);
-            
+            // Get Cognito user info first to get the sub (user ID)
+            var getUserRequest = new GetUserRequest
+            {
+                AccessToken = authResponse.AuthenticationResult.AccessToken
+            };
+            var cognitoUser = await _cognitoClient.GetUserAsync(getUserRequest);
+            var cognitoUserId = cognitoUser.UserAttributes.FirstOrDefault(a => a.Name == "sub")?.Value ?? cognitoUser.Username;
+
+            // Try to find user by CognitoUserId first (most reliable), then by email
+            var user = await _unitOfWork.Users.GetByCognitoUserIdAsync(cognitoUserId);
+
+            if (user == null)
+            {
+                var emailObj = Email.Create(email);
+                user = await _unitOfWork.Users.GetByEmailAsync(emailObj);
+            }
+
             if (user != null)
             {
                 user.UpdateLastLogin();
+                await _unitOfWork.SaveChangesAsync();
+            }
+            else
+            {
+                // User exists in Cognito but not locally - sync them
+                var firstName = cognitoUser.UserAttributes.FirstOrDefault(a => a.Name == "given_name")?.Value ?? "User";
+                var lastName = cognitoUser.UserAttributes.FirstOrDefault(a => a.Name == "family_name")?.Value ?? "User";
+
+                user = new User(firstName, lastName, email, UserRole.Customer);
+                user.SetCognitoUserId(cognitoUserId); // This also sets User.Id = cognitoUserId (GUID)
+                user.MarkEmailVerified(); // User can login, so email is verified
+                user.UpdateLastLogin();
+
+                await _unitOfWork.Users.AddAsync(user);
                 await _unitOfWork.SaveChangesAsync();
             }
 

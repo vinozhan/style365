@@ -30,13 +30,27 @@ public class ProductReviewConfiguration : IEntityTypeConfiguration<ProductReview
         builder.Property(pr => pr.IsVerifiedPurchase)
             .HasDefaultValue(false);
 
-        builder.Property(pr => pr.IsApproved)
-            .HasDefaultValue(false);
+        builder.Property(pr => pr.Status)
+            .HasConversion<int>()
+            .IsRequired();
 
-        builder.Property(pr => pr.ApprovedAt);
+        builder.Property(pr => pr.PublishedAt);
+
+        builder.Property(pr => pr.ModerationNotes)
+            .HasMaxLength(500);
+
+        builder.Property(pr => pr.HelpfulCount)
+            .HasDefaultValue(0);
+
+        builder.Property(pr => pr.NotHelpfulCount)
+            .HasDefaultValue(0);
 
         builder.Property(pr => pr.ApprovedBy)
             .HasMaxLength(128);
+
+        // Ignore computed properties
+        builder.Ignore(pr => pr.IsApproved);
+        builder.Ignore(pr => pr.ApprovedAt);
 
         builder.Property(pr => pr.CreatedAt)
             .IsRequired();
@@ -57,8 +71,11 @@ public class ProductReviewConfiguration : IEntityTypeConfiguration<ProductReview
         builder.HasIndex(pr => new { pr.ProductId, pr.UserId })
             .HasDatabaseName("IX_ProductReviews_ProductId_UserId");
 
-        builder.HasIndex(pr => new { pr.ProductId, pr.IsApproved })
-            .HasDatabaseName("IX_ProductReviews_ProductId_IsApproved");
+        builder.HasIndex(pr => new { pr.ProductId, pr.Status })
+            .HasDatabaseName("IX_ProductReviews_ProductId_Status");
+
+        builder.HasIndex(pr => pr.Status)
+            .HasDatabaseName("IX_ProductReviews_Status");
 
         // Relationships
         builder.HasOne(pr => pr.Product)
@@ -70,5 +87,10 @@ public class ProductReviewConfiguration : IEntityTypeConfiguration<ProductReview
             .WithMany()
             .HasForeignKey(pr => pr.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(pr => pr.OrderItem)
+            .WithMany()
+            .HasForeignKey(pr => pr.OrderItemId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
