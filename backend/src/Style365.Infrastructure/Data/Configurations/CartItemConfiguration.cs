@@ -26,6 +26,19 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         builder.Property(ci => ci.AddedAt)
             .IsRequired();
 
+        // Configure Money value object for UnitPrice
+        builder.OwnsOne(ci => ci.UnitPrice, money =>
+        {
+            money.Property(m => m.Amount)
+                .HasColumnName("UnitPrice")
+                .HasPrecision(18, 2)
+                .IsRequired();
+            money.Property(m => m.Currency)
+                .HasColumnName("Currency")
+                .HasMaxLength(3)
+                .IsRequired();
+        });
+
         builder.Property(ci => ci.CreatedAt)
             .IsRequired();
 

@@ -33,6 +33,8 @@ public class User : BaseEntity
         Email = Email.Create(email);
         Role = role;
         IsActive = true;
+        IsEmailVerified = false;
+        IsPhoneVerified = false;
     }
 
     public void UpdateProfile(string firstName, string lastName, string? phoneNumber, DateTime? dateOfBirth)
@@ -44,7 +46,7 @@ public class User : BaseEntity
         UpdateTimestamp();
     }
 
-    public void VerifyEmail()
+    public void MarkEmailVerified()
     {
         IsEmailVerified = true;
         UpdateTimestamp();
@@ -52,6 +54,9 @@ public class User : BaseEntity
 
     public void VerifyPhone()
     {
+        if (PhoneNumber == null)
+            throw new InvalidOperationException("Phone number is missing");
+
         IsPhoneVerified = true;
         UpdateTimestamp();
     }
@@ -66,10 +71,27 @@ public class User : BaseEntity
     {
         if (string.IsNullOrWhiteSpace(cognitoUserId))
             throw new ArgumentException("Cognito user ID cannot be empty", nameof(cognitoUserId));
-            
+
+        if (CognitoUserId != null)
+        {
+            if (CognitoUserId == cognitoUserId)
+                return; // idempotent retry
+
+            throw new InvalidOperationException(
+                "CognitoUserId already set and cannot be changed.");
+        }
         CognitoUserId = cognitoUserId;
+
+        // Use Cognito sub (UUID) as the User's primary key
+        // This ensures JWT sub = User.Id = FK references across all entities
+        if (Guid.TryParse(cognitoUserId, out var cognitoGuid))
+        {
+            Id = cognitoGuid;
+        }
+
         UpdateTimestamp();
     }
+
 
     public void Activate()
     {
@@ -86,13 +108,13 @@ public class User : BaseEntity
     public void AddAddress(Address address, bool isDefault = false)
     {
         var userAddress = new UserAddress(Id, address, isDefault);
-        
+
         if (isDefault)
         {
             foreach (var existingAddress in _addresses)
                 existingAddress.SetAsDefault(false);
         }
-        
+
         _addresses.Add(userAddress);
         UpdateTimestamp();
     }
@@ -103,12 +125,12 @@ public class User : BaseEntity
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty", paramName);
-            
+
         name = name.Trim();
-        
+
         if (name.Length < 2)
             throw new ArgumentException("Name must be at least 2 characters", paramName);
-            
+
         return name;
     }
 }

@@ -178,6 +178,13 @@ namespace Style365.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("DeliveredAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -217,7 +224,7 @@ namespace Style365.Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -583,9 +590,6 @@ namespace Style365.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("ApprovedBy")
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
@@ -600,10 +604,10 @@ namespace Style365.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsApproved")
+                    b.Property<int>("HelpfulCount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -615,10 +619,28 @@ namespace Style365.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("ModerationNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("NotHelpfulCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid?>("OrderItemId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -636,14 +658,19 @@ namespace Style365.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderItemId");
+
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_ProductReviews_ProductId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_ProductReviews_Status");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("IX_ProductReviews_UserId");
 
-                    b.HasIndex("ProductId", "IsApproved")
-                        .HasDatabaseName("IX_ProductReviews_ProductId_IsApproved");
+                    b.HasIndex("ProductId", "Status")
+                        .HasDatabaseName("IX_ProductReviews_ProductId_Status");
 
                     b.HasIndex("ProductId", "UserId")
                         .HasDatabaseName("IX_ProductReviews_ProductId_UserId");
@@ -1104,11 +1131,38 @@ namespace Style365.Infrastructure.Migrations
                         .HasForeignKey("ProductVariantId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.OwnsOne("Style365.Domain.ValueObjects.Money", "UnitPrice", b1 =>
+                        {
+                            b1.Property<Guid>("CartItemId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("UnitPrice");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("Currency");
+
+                            b1.HasKey("CartItemId");
+
+                            b1.ToTable("CartItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CartItemId");
+                        });
+
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
 
                     b.Navigation("ProductVariant");
+
+                    b.Navigation("UnitPrice")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Style365.Domain.Entities.Category", b =>
@@ -1126,8 +1180,7 @@ namespace Style365.Infrastructure.Migrations
                     b.HasOne("Style365.Domain.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("Style365.Domain.ValueObjects.Address", "BillingAddress", b1 =>
                         {
@@ -1317,7 +1370,7 @@ namespace Style365.Infrastructure.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.OwnsOne("Style365.Domain.ValueObjects.Money", "Total", b1 =>
+                    b.OwnsOne("Style365.Domain.ValueObjects.Money", "TotalAmount", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("uuid");
@@ -1358,7 +1411,7 @@ namespace Style365.Infrastructure.Migrations
                     b.Navigation("TaxAmount")
                         .IsRequired();
 
-                    b.Navigation("Total")
+                    b.Navigation("TotalAmount")
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1578,6 +1631,11 @@ namespace Style365.Infrastructure.Migrations
 
             modelBuilder.Entity("Style365.Domain.Entities.ProductReview", b =>
                 {
+                    b.HasOne("Style365.Domain.Entities.OrderItem", "OrderItem")
+                        .WithMany()
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Style365.Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -1589,6 +1647,8 @@ namespace Style365.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("OrderItem");
 
                     b.Navigation("Product");
 

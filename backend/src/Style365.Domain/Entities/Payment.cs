@@ -33,6 +33,15 @@ public class Payment : BaseEntity
         PaymentReference = GeneratePaymentReference();
     }
 
+    public void SetExternalReference(string externalReference)
+    {
+        if (string.IsNullOrWhiteSpace(externalReference))
+            throw new ArgumentException("External reference cannot be empty");
+
+        PaymentReference = externalReference.Trim();
+        UpdateTimestamp();
+    }
+
     public void MarkAsProcessing(string? gatewayTransactionId = null)
     {
         if (Status != PaymentStatus.Pending)

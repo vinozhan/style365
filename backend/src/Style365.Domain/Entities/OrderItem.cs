@@ -22,6 +22,16 @@ public class OrderItem : BaseEntity
     private OrderItem() { }
   
 
+    public OrderItem(Guid productId, Guid? variantId, int quantity, Money unitPrice)
+    {
+        ProductId = productId;
+        ProductVariantId = variantId;
+        Quantity = ValidateQuantity(quantity);
+        UnitPrice = unitPrice;
+        ProductName = string.Empty;
+        ProductSku = string.Empty;
+    }
+
     public OrderItem(Guid orderId, Guid productId, int quantity, Money unitPrice, Guid? variantId = null)
     {
         OrderId = orderId;

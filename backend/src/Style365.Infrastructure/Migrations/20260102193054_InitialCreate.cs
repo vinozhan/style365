@@ -780,7 +780,7 @@ namespace Style365.Infrastructure.Migrations
                 table: "Users",
                 column: "CognitoUserId",
                 unique: true,
-                filter: "[CognitoUserId] IS NOT NULL");
+                filter: "\"CognitoUserId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

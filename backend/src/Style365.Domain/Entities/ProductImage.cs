@@ -14,14 +14,16 @@ public class ProductImage : BaseEntity
 
     private ProductImage() { }
 
-    public ProductImage(Guid productId, string imageUrl, string? altText = null, bool isMain = false, int sortOrder = 0)
+    public ProductImage(string imageUrl, string? altText = null, int sortOrder = 0, bool isMain = false)
     {
-        ProductId = productId;
         ImageUrl = ValidateImageUrl(imageUrl);
         AltText = altText?.Trim();
         IsMain = isMain;
         SortOrder = sortOrder;
     }
+
+    public bool IsPrimary => IsMain;
+    public int DisplayOrder => SortOrder;
 
     public void UpdateImage(string imageUrl, string? altText)
     {
@@ -35,6 +37,9 @@ public class ProductImage : BaseEntity
         IsMain = isMain;
         UpdateTimestamp();
     }
+
+    public void SetPrimary() => SetAsMain(true);
+    public void UnsetPrimary() => SetAsMain(false);
 
     public void UpdateSortOrder(int sortOrder)
     {
