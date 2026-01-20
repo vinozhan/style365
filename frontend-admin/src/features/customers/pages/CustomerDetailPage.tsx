@@ -78,10 +78,10 @@ export function CustomerDetailPage() {
                 )}
               </div>
 
-              {customer.phone && (
+              {customer.phoneNumber && (
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-slate-400" />
-                  <span>{customer.phone}</span>
+                  <span>{customer.phoneNumber}</span>
                 </div>
               )}
 

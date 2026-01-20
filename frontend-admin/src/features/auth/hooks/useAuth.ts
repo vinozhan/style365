@@ -11,7 +11,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (data) => {
-      if (data.user.role !== 'Admin') {
+      const allowedRoles = ['Admin', 'SuperAdmin', 'ContentManager'];
+      if (!allowedRoles.includes(data.user.role)) {
         toast.error('Access denied. Admin privileges required.');
         return;
       }

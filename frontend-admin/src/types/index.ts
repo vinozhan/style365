@@ -1,9 +1,23 @@
+// Backend returns role as enum number: 0=Customer, 1=Admin, 2=ContentManager, 3=SuperAdmin
+export type UserRoleNumber = 0 | 1 | 2 | 3;
+export type UserRoleString = 'Customer' | 'Admin' | 'ContentManager' | 'SuperAdmin';
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'Admin' | 'Customer' | 'ContentManager';
+  role: UserRoleString;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserFromApi {
+  id: string;
+  email: { value: string };
+  firstName: string;
+  lastName: string;
+  role: UserRoleNumber;
   createdAt: string;
   updatedAt: string;
 }
@@ -12,6 +26,15 @@ export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
+}
+
+// Backend login response structure (flat, not nested)
+export interface LoginApiResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  tokenType: string;
+  user: UserFromApi;
 }
 
 export interface LoginResponse {
@@ -148,10 +171,12 @@ export interface Customer {
   lastName: string;
   phoneNumber?: string;
   isActive: boolean;
+  isEmailVerified?: boolean;
   ordersCount: number;
   totalSpent: number;
   createdAt: string;
   lastOrderDate?: string;
+  lastLoginAt?: string;
 }
 
 export interface PaginatedResponse<T> {

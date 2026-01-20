@@ -9,11 +9,3 @@ export function useDashboardStats() {
     refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
   });
 }
-
-export function useRecentOrders(limit = 5) {
-  return useQuery({
-    queryKey: ['dashboard', 'recentOrders', limit],
-    queryFn: () => dashboardService.getRecentOrders(limit),
-    staleTime: 60 * 1000,
-  });
-}

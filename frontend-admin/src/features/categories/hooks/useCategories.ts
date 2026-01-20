@@ -17,11 +17,12 @@ export function useCategories(filters: CategoryFilters = {}) {
 
 export function useCategoryTree() {
   const { data, ...rest } = useCategories({ pageSize: 100 });
+  const items = data?.items || [];
 
   return {
     ...rest,
-    data: data ? buildCategoryTree(data.items) : [],
-    flatData: data?.items || [],
+    data: buildCategoryTree(items),
+    flatData: items,
   };
 }
 

@@ -60,9 +60,11 @@ public class GetCustomersHandler : IQueryHandler<GetCustomersQuery, Result<Pagin
                     Email = customer.Email.Value,
                     PhoneNumber = customer.PhoneNumber,
                     IsActive = customer.IsActive,
+                    IsEmailVerified = customer.IsEmailVerified,
                     OrdersCount = ordersList.Count,
                     TotalSpent = ordersList.Sum(o => o.TotalAmount.Amount),
                     LastOrderDate = ordersList.OrderByDescending(o => o.CreatedAt).FirstOrDefault()?.CreatedAt,
+                    LastLoginAt = customer.LastLoginAt,
                     CreatedAt = customer.CreatedAt
                 });
             }

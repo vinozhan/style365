@@ -30,22 +30,25 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (user, accessToken, refreshToken) => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        const adminRoles = ['Admin', 'SuperAdmin', 'ContentManager'];
         set({
           user,
           accessToken,
           refreshToken,
           isAuthenticated: true,
-          isAdmin: user.role === 'Admin',
+          isAdmin: adminRoles.includes(user.role),
           isLoading: false,
         });
       },
 
-      setUser: (user) =>
+      setUser: (user) => {
+        const adminRoles = ['Admin', 'SuperAdmin', 'ContentManager'];
         set({
           user,
           isAuthenticated: true,
-          isAdmin: user.role === 'Admin',
-        }),
+          isAdmin: adminRoles.includes(user.role),
+        });
+      },
 
       setTokens: (accessToken, refreshToken) => {
         localStorage.setItem('accessToken', accessToken);

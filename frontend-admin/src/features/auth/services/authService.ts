@@ -1,19 +1,43 @@
 import apiClient from '@/lib/api/client';
-import type { User, LoginResponse } from '@/types';
+import type { User, LoginResponse, LoginApiResponse, UserRoleNumber, UserRoleString } from '@/types';
 
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-export interface RefreshTokenRequest {
-  refreshToken: string;
+// Map role number to string
+const roleNumberToString: Record<UserRoleNumber, UserRoleString> = {
+  0: 'Customer',
+  1: 'Admin',
+  2: 'ContentManager',
+  3: 'SuperAdmin',
+};
+
+// Transform API response to frontend format
+function transformLoginResponse(apiResponse: LoginApiResponse): LoginResponse {
+  return {
+    user: {
+      id: apiResponse.user.id,
+      email: typeof apiResponse.user.email === 'object' ? apiResponse.user.email.value : apiResponse.user.email,
+      firstName: apiResponse.user.firstName,
+      lastName: apiResponse.user.lastName,
+      role: roleNumberToString[apiResponse.user.role] || 'Customer',
+      createdAt: apiResponse.user.createdAt,
+      updatedAt: apiResponse.user.updatedAt,
+    },
+    tokens: {
+      accessToken: apiResponse.accessToken,
+      refreshToken: apiResponse.refreshToken,
+      expiresIn: apiResponse.expiresIn,
+    },
+  };
 }
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
-    return response.data;
+    const response = await apiClient.post<LoginApiResponse>('/auth/login', credentials);
+    return transformLoginResponse(response.data);
   },
 
   async logout(): Promise<void> {

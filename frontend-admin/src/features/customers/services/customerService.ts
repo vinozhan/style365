@@ -17,9 +17,11 @@ interface CustomerApiResponse {
     email: string;
     phoneNumber?: string;
     isActive: boolean;
+    isEmailVerified: boolean;
     ordersCount: number;
     totalSpent: number;
     lastOrderDate?: string;
+    lastLoginAt?: string;
     createdAt: string;
   }[];
   page: number;
@@ -50,15 +52,19 @@ export const customerService = {
         email: item.email,
         phoneNumber: item.phoneNumber,
         isActive: item.isActive,
+        isEmailVerified: item.isEmailVerified,
         ordersCount: item.ordersCount,
         totalSpent: item.totalSpent,
         lastOrderDate: item.lastOrderDate,
+        lastLoginAt: item.lastLoginAt,
         createdAt: item.createdAt,
       })),
       pageNumber: data.page,
       pageSize: data.pageSize,
       totalCount: data.totalItems,
       totalPages: data.totalPages,
+      hasNextPage: data.page < data.totalPages,
+      hasPreviousPage: data.page > 1,
     };
   },
 

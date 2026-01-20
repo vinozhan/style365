@@ -8,9 +8,11 @@ public record CustomerDto
     public string Email { get; init; } = string.Empty;
     public string? PhoneNumber { get; init; }
     public bool IsActive { get; init; }
+    public bool IsEmailVerified { get; init; }
     public int OrdersCount { get; init; }
     public decimal TotalSpent { get; init; }
     public DateTime? LastOrderDate { get; init; }
+    public DateTime? LastLoginAt { get; init; }
     public DateTime CreatedAt { get; init; }
 
     public string FullName => $"{FirstName} {LastName}";

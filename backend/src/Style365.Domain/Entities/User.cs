@@ -72,6 +72,12 @@ public class User : BaseEntity
         if (string.IsNullOrWhiteSpace(cognitoUserId))
             throw new ArgumentException("Cognito user ID cannot be empty", nameof(cognitoUserId));
 
+        // Validate that Cognito sub is a valid GUID format
+        if (!Guid.TryParse(cognitoUserId, out var cognitoGuid))
+            throw new ArgumentException(
+                $"Cognito user ID must be a valid GUID format. Received: '{cognitoUserId}'",
+                nameof(cognitoUserId));
+
         if (CognitoUserId != null)
         {
             if (CognitoUserId == cognitoUserId)
@@ -80,14 +86,11 @@ public class User : BaseEntity
             throw new InvalidOperationException(
                 "CognitoUserId already set and cannot be changed.");
         }
-        CognitoUserId = cognitoUserId;
 
         // Use Cognito sub (UUID) as the User's primary key
         // This ensures JWT sub = User.Id = FK references across all entities
-        if (Guid.TryParse(cognitoUserId, out var cognitoGuid))
-        {
-            Id = cognitoGuid;
-        }
+        Id = cognitoGuid;
+        CognitoUserId = cognitoUserId;
 
         UpdateTimestamp();
     }
@@ -103,6 +106,15 @@ public class User : BaseEntity
     {
         IsActive = false;
         UpdateTimestamp();
+    }
+
+    public void UpdateRole(UserRole role)
+    {
+        if (Role != role)
+        {
+            Role = role;
+            UpdateTimestamp();
+        }
     }
 
     public void AddAddress(Address address, bool isDefault = false)

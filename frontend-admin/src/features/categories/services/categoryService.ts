@@ -57,7 +57,11 @@ export const categoryService = {
 };
 
 // Helper to build tree structure from flat list
-export function buildCategoryTree(categories: Category[]): Category[] {
+export function buildCategoryTree(categories: Category[] | undefined | null): Category[] {
+  if (!categories || categories.length === 0) {
+    return [];
+  }
+
   const map = new Map<string, Category>();
   const roots: Category[] = [];
 
