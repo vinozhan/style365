@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { ImageUpload } from './ImageUpload';
 import type { Product, Category } from '@/types';
 
 const productSchema = z.object({
@@ -50,19 +52,47 @@ export interface ProductFormOutput {
   metaDescription?: string;
 }
 
+interface ProductImage {
+  id: string;
+  url: string;
+  thumbnailSmallUrl?: string;
+  thumbnailMediumUrl?: string;
+  isPrimary: boolean;
+  sortOrder: number;
+}
+
 interface ProductFormProps {
   product?: Product;
   categories: Category[];
   onSubmit: (data: ProductFormOutput) => void;
   isLoading?: boolean;
+  // Image upload props (only for edit mode)
+  images?: ProductImage[];
+  onUploadImages?: (files: File[]) => Promise<void>;
+  onDeleteImage?: (imageId: string) => Promise<void>;
+  onSetPrimaryImage?: (imageId: string) => Promise<void>;
+  isUploadingImages?: boolean;
+  uploadProgress?: number;
 }
 
-export function ProductForm({ product, categories, onSubmit, isLoading }: ProductFormProps) {
+export function ProductForm({
+  product,
+  categories,
+  onSubmit,
+  isLoading,
+  images = [],
+  onUploadImages,
+  onDeleteImage,
+  onSetPrimaryImage,
+  isUploadingImages = false,
+  uploadProgress = 0,
+}: ProductFormProps) {
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -84,6 +114,29 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
       metaDescription: product?.metaDescription || '',
     },
   });
+
+  // Reset form when product data changes (e.g., after fetching)
+  useEffect(() => {
+    if (product) {
+      reset({
+        name: product.name || '',
+        description: product.description || '',
+        shortDescription: product.shortDescription || '',
+        sku: product.sku || '',
+        price: product.price || 0,
+        compareAtPrice: product.compareAtPrice || undefined,
+        costPrice: product.costPrice || undefined,
+        stockQuantity: product.stockQuantity || 0,
+        lowStockThreshold: product.lowStockThreshold || 10,
+        isActive: product.isActive ?? true,
+        isFeatured: product.isFeatured ?? false,
+        categoryId: product.categoryId || '',
+        tags: product.tags?.join(', ') || '',
+        metaTitle: product.metaTitle || '',
+        metaDescription: product.metaDescription || '',
+      });
+    }
+  }, [product, reset]);
 
   const isActive = watch('isActive');
   const isFeatured = watch('isFeatured');
@@ -219,6 +272,28 @@ export function ProductForm({ product, categories, onSubmit, isLoading }: Produc
               </div>
             </CardContent>
           </Card>
+
+          {/* Images - Only show for existing products */}
+          {product && onUploadImages && onDeleteImage && onSetPrimaryImage && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Images</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ImageUpload
+                  productId={product.id}
+                  images={images}
+                  onUpload={onUploadImages}
+                  onDelete={onDeleteImage}
+                  onSetPrimary={onSetPrimaryImage}
+                  isUploading={isUploadingImages}
+                  uploadProgress={uploadProgress}
+                  maxFiles={10}
+                  disabled={isLoading}
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}

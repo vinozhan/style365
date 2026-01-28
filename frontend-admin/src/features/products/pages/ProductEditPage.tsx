@@ -2,7 +2,14 @@ import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductForm } from '../components/ProductForm';
-import { useProduct, useUpdateProduct, useCategories } from '../hooks/useProducts';
+import {
+  useProduct,
+  useUpdateProduct,
+  useCategories,
+  useUploadProductImages,
+  useDeleteProductImage,
+  useSetPrimaryImage,
+} from '../hooks/useProducts';
 import { PageLoader } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 
@@ -11,6 +18,23 @@ export function ProductEditPage() {
   const { data: product, isLoading: productLoading } = useProduct(id!);
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const updateMutation = useUpdateProduct();
+
+  // Image upload hooks
+  const uploadMutation = useUploadProductImages(id!);
+  const deleteMutation = useDeleteProductImage(id!);
+  const setPrimaryMutation = useSetPrimaryImage(id!);
+
+  const handleUploadImages = async (files: File[]) => {
+    await uploadMutation.mutateAsync({ files });
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    await deleteMutation.mutateAsync(imageId);
+  };
+
+  const handleSetPrimaryImage = async (imageId: string) => {
+    await setPrimaryMutation.mutateAsync(imageId);
+  };
 
   if (productLoading || categoriesLoading) {
     return <PageLoader />;
@@ -49,6 +73,21 @@ export function ProductEditPage() {
         categories={categories || []}
         onSubmit={(data) => updateMutation.mutate({ id: id!, data: { ...data, id: id! } })}
         isLoading={updateMutation.isPending}
+        images={
+          product.images?.map((img) => ({
+            id: img.id,
+            url: img.url,
+            thumbnailSmallUrl: img.thumbnailSmallUrl,
+            thumbnailMediumUrl: img.thumbnailMediumUrl,
+            isPrimary: img.isPrimary || false,
+            sortOrder: img.sortOrder || 0,
+          })) || []
+        }
+        onUploadImages={handleUploadImages}
+        onDeleteImage={handleDeleteImage}
+        onSetPrimaryImage={handleSetPrimaryImage}
+        isUploadingImages={uploadMutation.isPending}
+        uploadProgress={uploadMutation.uploadProgress}
       />
     </div>
   );

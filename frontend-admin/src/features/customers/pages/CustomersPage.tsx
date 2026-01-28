@@ -17,7 +17,7 @@ export function CustomersPage() {
   const [search, setSearch] = useState('');
 
   const { data, isLoading } = useCustomers({
-    pageNumber: page,
+    page,
     pageSize,
     search: search || undefined,
     sortBy: 'createdAt',
@@ -109,10 +109,10 @@ export function CustomersPage() {
 
       {data && data.totalPages > 0 && (
         <Pagination
-          currentPage={data.pageNumber}
+          currentPage={data.page}
           totalPages={data.totalPages}
           pageSize={pageSize}
-          totalCount={data.totalCount}
+          totalItems={data.totalItems}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
             setPageSize(size);

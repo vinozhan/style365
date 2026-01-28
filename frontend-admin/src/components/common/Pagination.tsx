@@ -6,7 +6,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   pageSize: number;
-  totalCount: number;
+  totalItems: number;
   onPageChange: (page: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
   pageSizeOptions?: number[];
@@ -16,19 +16,19 @@ export function Pagination({
   currentPage,
   totalPages,
   pageSize,
-  totalCount,
+  totalItems,
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [10, 20, 50, 100],
 }: PaginationProps) {
   const startItem = (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, totalCount);
+  const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
     <div className="flex items-center justify-between px-2 py-4">
       <div className="flex items-center gap-4 text-sm text-slate-500">
         <span>
-          Showing {startItem} to {endItem} of {totalCount} results
+          Showing {startItem} to {endItem} of {totalItems} results
         </span>
         {onPageSizeChange && (
           <div className="flex items-center gap-2">

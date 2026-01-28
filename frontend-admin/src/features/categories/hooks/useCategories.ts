@@ -43,8 +43,11 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category created successfully');
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const message = error.response?.data?.message || 'Failed to create category';
+    onError: (error: Error & { response?: { data?: { errors?: string[]; message?: string } } }) => {
+      const errors = error.response?.data?.errors;
+      const message = errors && errors.length > 0
+        ? errors.join(', ')
+        : error.response?.data?.message || 'Failed to create category';
       toast.error(message);
     },
   });
@@ -60,8 +63,11 @@ export function useUpdateCategory() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category updated successfully');
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const message = error.response?.data?.message || 'Failed to update category';
+    onError: (error: Error & { response?: { data?: { errors?: string[]; message?: string } } }) => {
+      const errors = error.response?.data?.errors;
+      const message = errors && errors.length > 0
+        ? errors.join(', ')
+        : error.response?.data?.message || 'Failed to update category';
       toast.error(message);
     },
   });
@@ -76,8 +82,11 @@ export function useDeleteCategory() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category deleted successfully');
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const message = error.response?.data?.message || 'Failed to delete category';
+    onError: (error: Error & { response?: { data?: { errors?: string[]; message?: string } } }) => {
+      const errors = error.response?.data?.errors;
+      const message = errors && errors.length > 0
+        ? errors.join(', ')
+        : error.response?.data?.message || 'Failed to delete category';
       toast.error(message);
     },
   });

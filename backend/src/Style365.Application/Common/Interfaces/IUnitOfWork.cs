@@ -16,6 +16,7 @@ public interface IUnitOfWork : IDisposable
     IProductReviewRepository ProductReviews { get; }
     IRepository<ProductTag> ProductTags { get; }
     IRepository<OrderItem> OrderItems { get; }
+    IRepository<ProductImage> ProductImages { get; }
 
     // Unit of Work operations
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

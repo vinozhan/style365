@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Style365.Application.Common.DTOs;
 using Style365.Application.Common.Models;
 using Style365.Application.Features.Products.Commands.CreateProduct;
+using Style365.Application.Features.Products.Commands.UpdateProduct;
+using Style365.Application.Features.Products.Commands.DeleteProduct;
 using Style365.Application.Features.Products.Queries.GetProducts;
 using Style365.Application.Features.Products.Queries.GetProductById;
 
@@ -81,6 +83,77 @@ public class ProductsController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetProducts), null, result.Data);
+    }
+
+    /// <summary>
+    /// Update an existing product (Admin only)
+    /// </summary>
+    /// <param name="id">Product ID</param>
+    /// <param name="command">Updated product details</param>
+    /// <returns>Updated product information</returns>
+    /// <response code="200">Product updated successfully</response>
+    /// <response code="400">Invalid product data</response>
+    /// <response code="401">Unauthorized - JWT token required</response>
+    /// <response code="403">Forbidden - Admin role required</response>
+    /// <response code="404">Product not found</response>
+    [HttpPut("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(typeof(ProductDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(new { errors = new[] { "Route ID does not match command ID" } });
+        }
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            if (result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound(new { errors = result.Errors });
+            }
+            return BadRequest(new { errors = result.Errors });
+        }
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Delete a product (Admin only)
+    /// </summary>
+    /// <param name="id">Product ID</param>
+    /// <returns>Success status</returns>
+    /// <response code="204">Product deleted successfully</response>
+    /// <response code="401">Unauthorized - JWT token required</response>
+    /// <response code="403">Forbidden - Admin role required</response>
+    /// <response code="404">Product not found</response>
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DeleteProduct(Guid id)
+    {
+        var command = new DeleteProductCommand(id);
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            if (result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound(new { errors = result.Errors });
+            }
+            return BadRequest(new { errors = result.Errors });
+        }
+
+        return NoContent();
     }
 
     /// <summary>

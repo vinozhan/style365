@@ -3,6 +3,14 @@ import type { ApiError } from '@/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:5001';
 
+// Helper to clear all auth state and redirect to login
+function clearAuthAndRedirect() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('auth-storage'); // Clear Zustand persisted state
+  window.location.href = '/login';
+}
+
 export const apiClient = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   headers: {
@@ -50,15 +58,13 @@ apiClient.interceptors.response.use(
 
           return apiClient(originalRequest);
         } catch {
-          // Refresh failed, clear tokens and redirect to login
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
+          // Refresh failed, clear all auth state and redirect to login
+          clearAuthAndRedirect();
           return Promise.reject(error);
         }
       } else {
-        // No refresh token, redirect to login
-        window.location.href = '/login';
+        // No refresh token, clear all auth state and redirect to login
+        clearAuthAndRedirect();
       }
     }
 

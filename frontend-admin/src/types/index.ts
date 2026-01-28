@@ -63,6 +63,16 @@ export interface ProductImage {
   altText?: string;
   sortOrder: number;
   isPrimary: boolean;
+  // S3 thumbnail URLs
+  thumbnailSmallUrl?: string;
+  thumbnailMediumUrl?: string;
+  thumbnailLargeUrl?: string;
+  webPUrl?: string;
+  // Image metadata
+  fileSize?: number;
+  width?: number;
+  height?: number;
+  originalFileName?: string;
 }
 
 export interface ProductVariant {
@@ -181,8 +191,8 @@ export interface Customer {
 
 export interface PaginatedResponse<T> {
   items: T[];
-  totalCount: number;
-  pageNumber: number;
+  totalItems: number;
+  page: number;
   pageSize: number;
   totalPages: number;
   hasNextPage: boolean;

@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     private IProductReviewRepository? _productReviews;
     private IRepository<ProductTag>? _productTags;
     private IRepository<OrderItem>? _orderItems;
+    private IRepository<ProductImage>? _productImages;
 
     public UnitOfWork(Style365DbContext context)
     {
@@ -38,6 +39,7 @@ public class UnitOfWork : IUnitOfWork
     public IProductReviewRepository ProductReviews => _productReviews ??= new ProductReviewRepository(_context);
     public IRepository<ProductTag> ProductTags => _productTags ??= new Repository<ProductTag>(_context);
     public IRepository<OrderItem> OrderItems => _orderItems ??= new Repository<OrderItem>(_context);
+    public IRepository<ProductImage> ProductImages => _productImages ??= new Repository<ProductImage>(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -10,7 +10,7 @@ public class ProductDto
     public string Sku { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string Currency { get; set; } = "USD";
-    public decimal? ComparePrice { get; set; }
+    public decimal? CompareAtPrice { get; set; }
     public decimal? CostPrice { get; set; }
     public int StockQuantity { get; set; }
     public int LowStockThreshold { get; set; }
@@ -35,6 +35,6 @@ public class ProductDto
     // Computed properties
     public bool IsInStock => !TrackQuantity || StockQuantity > 0;
     public bool IsLowStock => TrackQuantity && StockQuantity <= LowStockThreshold;
-    public decimal? DiscountPercentage => ComparePrice > 0 ? ((ComparePrice - Price) / ComparePrice) * 100 : null;
-    public string MainImageUrl => Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? Images.FirstOrDefault()?.ImageUrl ?? "";
+    public decimal? DiscountPercentage => CompareAtPrice > 0 ? ((CompareAtPrice - Price) / CompareAtPrice) * 100 : null;
+    public string MainImageUrl => Images.FirstOrDefault(i => i.IsPrimary)?.Url ?? Images.FirstOrDefault()?.Url ?? "";
 }
