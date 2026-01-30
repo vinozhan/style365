@@ -87,9 +87,9 @@ export function ProductsPage() {
       ),
     },
     {
-      accessorKey: 'category',
+      accessorKey: 'categoryName',
       header: 'Category',
-      cell: ({ row }) => row.original.category?.name || '-',
+      cell: ({ row }) => row.original.categoryName || '-',
     },
     {
       accessorKey: 'price',

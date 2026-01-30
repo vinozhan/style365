@@ -158,12 +158,12 @@ export function CategoryForm({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{category ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 pb-2">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input id="name" {...register('name')} />

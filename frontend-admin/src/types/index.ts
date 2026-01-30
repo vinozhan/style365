@@ -101,6 +101,7 @@ export interface Product {
   isActive: boolean;
   isFeatured: boolean;
   categoryId?: string;
+  categoryName?: string; // Backend returns categoryName string, not full category object
   category?: Category;
   brandId?: string;
   images: ProductImage[];

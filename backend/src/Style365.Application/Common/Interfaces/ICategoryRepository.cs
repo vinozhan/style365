@@ -12,4 +12,5 @@ public interface ICategoryRepository : IRepository<Category>
     Task<Category?> GetByIdWithProductsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> IsSlugUniqueAsync(string slug, Guid? excludeCategoryId = null, CancellationToken cancellationToken = default);
     Task<IEnumerable<Category>> GetCategoriesByParentAsync(Guid? parentCategoryId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Category>> GetAllWithProductCountsAsync(CancellationToken cancellationToken = default);
 }

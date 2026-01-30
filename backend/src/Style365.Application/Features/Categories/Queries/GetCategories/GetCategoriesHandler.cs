@@ -28,7 +28,7 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, Result<G
         }
         else
         {
-            categories = await _unitOfWork.Categories.GetAllAsync();
+            categories = await _unitOfWork.Categories.GetAllWithProductCountsAsync(cancellationToken);
         }
 
         var categoryDtos = new List<CategoryDto>();
