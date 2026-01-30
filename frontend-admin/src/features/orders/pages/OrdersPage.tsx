@@ -20,7 +20,7 @@ export function OrdersPage() {
   const [dateTo, setDateTo] = useState('');
 
   const { data, isLoading } = useOrders({
-    pageNumber: page,
+    page,
     pageSize,
     search: search || undefined,
     status: status === 'all' ? undefined : (status as OrderStatus),
@@ -127,10 +127,10 @@ export function OrdersPage() {
 
       {data && data.totalPages > 0 && (
         <Pagination
-          currentPage={data.pageNumber}
+          currentPage={data.page}
           totalPages={data.totalPages}
           pageSize={pageSize}
-          totalCount={data.totalCount}
+          totalItems={data.totalItems}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
             setPageSize(size);

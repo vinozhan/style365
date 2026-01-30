@@ -34,8 +34,11 @@ export function useUpdateOrderStatus() {
       queryClient.invalidateQueries({ queryKey: ['order', id] });
       toast.success('Order status updated successfully');
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const message = error.response?.data?.message || 'Failed to update order status';
+    onError: (error: Error & { response?: { data?: { errors?: string[]; message?: string } } }) => {
+      const errors = error.response?.data?.errors;
+      const message = errors && errors.length > 0
+        ? errors.join(', ')
+        : error.response?.data?.message || 'Failed to update order status';
       toast.error(message);
     },
   });
@@ -52,8 +55,11 @@ export function useUpdateTracking() {
       queryClient.invalidateQueries({ queryKey: ['order', id] });
       toast.success('Tracking information updated successfully');
     },
-    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
-      const message = error.response?.data?.message || 'Failed to update tracking';
+    onError: (error: Error & { response?: { data?: { errors?: string[]; message?: string } } }) => {
+      const errors = error.response?.data?.errors;
+      const message = errors && errors.length > 0
+        ? errors.join(', ')
+        : error.response?.data?.message || 'Failed to update tracking';
       toast.error(message);
     },
   });

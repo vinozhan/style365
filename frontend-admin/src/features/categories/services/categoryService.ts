@@ -1,10 +1,28 @@
 import apiClient from '@/lib/api/client';
 import type { Category, PaginatedResponse } from '@/types';
 
+// Backend response format for categories
+interface GetCategoriesApiResponse {
+  categories: ApiCategoryDto[];
+}
+
+interface ApiCategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  imageUrl?: string;
+  isActive: boolean;
+  sortOrder: number;
+  parentCategoryId?: string;
+  subCategories?: ApiCategoryDto[];
+  productCount: number;
+}
+
 export interface CategoryFilters {
   search?: string;
   isActive?: boolean;
-  pageNumber?: number;
+  page?: number;
   pageSize?: number;
 }
 
@@ -22,23 +40,57 @@ export interface UpdateCategoryInput extends CreateCategoryInput {
   id: string;
 }
 
+export interface CategoryImageUploadResult {
+  categoryId: string;
+  imageUrl: string;
+  thumbnailUrl?: string;
+  fileSize: number;
+}
+
+// Transform backend DTO to frontend Category type
+function mapApiCategoryToCategory(dto: ApiCategoryDto): Category {
+  return {
+    id: dto.id,
+    name: dto.name,
+    slug: dto.slug,
+    description: dto.description,
+    imageUrl: dto.imageUrl,
+    isActive: dto.isActive,
+    sortOrder: dto.sortOrder,
+    parentId: dto.parentCategoryId,
+    productsCount: dto.productCount,
+    children: dto.subCategories?.map(mapApiCategoryToCategory),
+    createdAt: '',
+    updatedAt: '',
+  };
+}
+
 export const categoryService = {
   async getCategories(filters: CategoryFilters = {}): Promise<PaginatedResponse<Category>> {
     const params: Record<string, string | number | boolean | undefined> = {
-      pageNumber: filters.pageNumber || 1,
-      pageSize: filters.pageSize || 100,
+      activeOnly: filters.isActive ?? false, // Show all categories by default
+      includeSubCategories: true,
     };
 
-    if (filters.search) params.search = filters.search;
-    if (filters.isActive !== undefined) params.isActive = filters.isActive;
+    const response = await apiClient.get<GetCategoriesApiResponse>('/categories', { params });
 
-    const response = await apiClient.get<PaginatedResponse<Category>>('/categories', { params });
-    return response.data;
+    // Transform to PaginatedResponse format expected by frontend
+    const items = response.data.categories.map(mapApiCategoryToCategory);
+
+    return {
+      items,
+      totalItems: items.length,
+      page: 1,
+      pageSize: items.length,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
   },
 
   async getCategory(id: string): Promise<Category> {
-    const response = await apiClient.get<Category>(`/categories/${id}`);
-    return response.data;
+    const response = await apiClient.get<ApiCategoryDto>(`/categories/${id}`);
+    return mapApiCategoryToCategory(response.data);
   },
 
   async createCategory(data: CreateCategoryInput): Promise<Category> {
@@ -53,6 +105,30 @@ export const categoryService = {
 
   async deleteCategory(id: string): Promise<void> {
     await apiClient.delete(`/categories/${id}`);
+  },
+
+  async uploadCategoryImage(
+    categoryId: string,
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<CategoryImageUploadResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.post<CategoryImageUploadResult>(
+      `/categories/${categoryId}/image`,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        },
+      }
+    );
+    return response.data;
   },
 };
 

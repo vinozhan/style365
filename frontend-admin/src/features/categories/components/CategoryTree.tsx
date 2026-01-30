@@ -73,6 +73,18 @@ function CategoryTreeItem({ category, level, onEdit, onDelete }: CategoryTreeIte
             <span className="w-5" />
           )}
 
+          {category.imageUrl ? (
+            <img
+              src={category.imageUrl}
+              alt={category.name}
+              className="h-8 w-8 rounded object-cover"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-100 text-xs text-slate-400">
+              <FolderTree className="h-4 w-4" />
+            </div>
+          )}
+
           <span className="font-medium">{category.name}</span>
 
           {!category.isActive && (
@@ -82,7 +94,7 @@ function CategoryTreeItem({ category, level, onEdit, onDelete }: CategoryTreeIte
           )}
 
           <span className="text-sm text-slate-500">
-            ({category.productsCount || 0} products)
+            ({category.productsCount ?? 0} products)
           </span>
         </div>
 

@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +16,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { CategoryImageUpload } from './CategoryImageUpload';
+import { categoryService } from '../services/categoryService';
 import type { Category } from '@/types';
 
 const categorySchema = z.object({
@@ -22,7 +25,7 @@ const categorySchema = z.object({
   slug: z.string().max(100).optional(),
   description: z.string().max(500).optional(),
   parentId: z.string().optional(),
-  imageUrl: z.string().url().optional().or(z.literal('')),
+  imageUrl: z.string().optional(), // URL is set by upload, not validated as URL since it can be empty
   isActive: z.boolean(),
   sortOrder: z.number().int().min(0),
 });
@@ -56,6 +59,9 @@ export function CategoryForm({
   onSubmit,
   isLoading,
 }: CategoryFormProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const {
     register,
     handleSubmit,
@@ -78,6 +84,24 @@ export function CategoryForm({
 
   const isActive = watch('isActive');
   const parentId = watch('parentId');
+  const imageUrl = watch('imageUrl');
+
+  const isEditMode = !!category?.id;
+
+  // Reset form when category changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      reset({
+        name: category?.name || '',
+        slug: category?.slug || '',
+        description: category?.description || '',
+        parentId: category?.parentId || '',
+        imageUrl: category?.imageUrl || '',
+        isActive: category?.isActive ?? true,
+        sortOrder: category?.sortOrder || 0,
+      });
+    }
+  }, [category, open, reset]);
 
   // Filter out the current category and its children from parent options
   const availableParents = categories.filter((c) => {
@@ -89,7 +113,34 @@ export function CategoryForm({
 
   const handleClose = () => {
     reset();
+    setIsUploading(false);
+    setUploadProgress(0);
     onClose();
+  };
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    if (!category?.id) {
+      throw new Error('Save category first before uploading image');
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const result = await categoryService.uploadCategoryImage(
+        category.id,
+        file,
+        setUploadProgress
+      );
+      setValue('imageUrl', result.imageUrl);
+      return result.imageUrl;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleImageRemove = () => {
+    setValue('imageUrl', '');
   };
 
   const handleFormSubmit = (data: CategoryFormData) => {
@@ -107,12 +158,12 @@ export function CategoryForm({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{category ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 pb-2">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input id="name" {...register('name')} />
@@ -150,8 +201,24 @@ export function CategoryForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
-            <Input id="imageUrl" type="url" {...register('imageUrl')} />
+            <Label>Category Image</Label>
+            {isEditMode ? (
+              <CategoryImageUpload
+                currentImageUrl={imageUrl}
+                onUpload={handleImageUpload}
+                onRemove={handleImageRemove}
+                isUploading={isUploading}
+                uploadProgress={uploadProgress}
+                disabled={isLoading}
+              />
+            ) : (
+              <div className="flex items-start gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-500" />
+                <p className="text-sm text-slate-600">
+                  Save the category first, then edit it to upload an image.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

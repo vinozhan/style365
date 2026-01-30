@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Plus, MoreHorizontal, Pencil, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,7 +14,8 @@ import { Pagination } from '@/components/common/Pagination';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { StockBadge, ActiveBadge } from '@/components/common/StatusBadge';
 import { ProductFilters } from '../components/ProductFilters';
-import { useProducts, useDeleteProduct, useCategories } from '../hooks/useProducts';
+import { CSVImportModal } from '../components/CSVImportModal';
+import { useProducts, useDeleteProduct, useCategories, useImportProducts, getImportTemplateUrl } from '../hooks/useProducts';
 import { formatCurrency } from '@/lib/utils';
 import type { Product } from '@/types';
 
@@ -26,10 +27,12 @@ export function ProductsPage() {
   const [isActive, setIsActive] = useState('all');
   const [stockStatus, setStockStatus] = useState('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const { data: categoriesData } = useCategories();
+  const importMutation = useImportProducts();
   const { data, isLoading } = useProducts({
-    pageNumber: page,
+    page,
     pageSize,
     search: search || undefined,
     categoryId: categoryId || undefined,
@@ -53,6 +56,10 @@ export function ProductsPage() {
         onSuccess: () => setDeleteId(null),
       });
     }
+  };
+
+  const handleImport = async (file: File, validateOnly: boolean, skipDuplicates: boolean) => {
+    return importMutation.mutateAsync({ file, validateOnly, skipDuplicates });
   };
 
   const columns: ColumnDef<Product>[] = [
@@ -80,9 +87,9 @@ export function ProductsPage() {
       ),
     },
     {
-      accessorKey: 'category',
+      accessorKey: 'categoryName',
       header: 'Category',
-      cell: ({ row }) => row.original.category?.name || '-',
+      cell: ({ row }) => row.original.categoryName || '-',
     },
     {
       accessorKey: 'price',
@@ -149,12 +156,18 @@ export function ProductsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Products</h1>
           <p className="text-slate-500">Manage your product catalog</p>
         </div>
-        <Button asChild>
-          <Link to="/products/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsImportModalOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />
+            Import CSV
+          </Button>
+          <Button asChild>
+            <Link to="/products/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <ProductFilters
@@ -192,10 +205,10 @@ export function ProductsPage() {
 
       {data && data.totalPages > 0 && (
         <Pagination
-          currentPage={data.pageNumber}
+          currentPage={data.page}
           totalPages={data.totalPages}
           pageSize={pageSize}
-          totalCount={data.totalCount}
+          totalItems={data.totalItems}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
             setPageSize(size);
@@ -213,6 +226,13 @@ export function ProductsPage() {
         onConfirm={handleDelete}
         variant="destructive"
         isLoading={deleteMutation.isPending}
+      />
+
+      <CSVImportModal
+        open={isImportModalOpen}
+        onOpenChange={setIsImportModalOpen}
+        onImport={handleImport}
+        templateUrl={getImportTemplateUrl()}
       />
     </div>
   );

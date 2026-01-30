@@ -6,7 +6,7 @@ export interface OrderFilters {
   status?: OrderStatus;
   dateFrom?: string;
   dateTo?: string;
-  pageNumber?: number;
+  page?: number;
   pageSize?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
@@ -25,7 +25,7 @@ export interface UpdateTrackingInput {
 export const orderService = {
   async getOrders(filters: OrderFilters = {}): Promise<PaginatedResponse<Order>> {
     const params: Record<string, string | number | undefined> = {
-      pageNumber: filters.pageNumber || 1,
+      page: filters.page || 1,
       pageSize: filters.pageSize || 10,
     };
 
