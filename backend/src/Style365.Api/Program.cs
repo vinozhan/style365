@@ -149,7 +149,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",  // Next.js storefront
-                "http://localhost:3001",  // React admin dashboard
+                "http://localhost:5173",  // React admin dashboard
                 "https://localhost:3000",
                 "https://localhost:3001"
               )

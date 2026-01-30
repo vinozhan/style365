@@ -225,15 +225,20 @@ public class AuthController : ControllerBase
     [ProducesResponseType(401)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
+        var accessToken = ExtractBearerToken();
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            return Unauthorized(new { error = "Invalid authorization header" });
+        }
+
         var authService = HttpContext.RequestServices.GetRequiredService<IAuthenticationService>();
-        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var result = await authService.ChangePasswordAsync(accessToken, request.OldPassword, request.NewPassword);
-        
+
         if (!result.IsSuccess)
         {
             return BadRequest(new { errors = result.Errors });
         }
-        
+
         return Ok(new { message = "Password changed successfully" });
     }
 
@@ -278,15 +283,39 @@ public class AuthController : ControllerBase
     [ProducesResponseType(401)]
     public async Task<IActionResult> Logout()
     {
+        var accessToken = ExtractBearerToken();
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            return Unauthorized(new { error = "Invalid authorization header" });
+        }
+
         var authService = HttpContext.RequestServices.GetRequiredService<IAuthenticationService>();
-        var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var result = await authService.SignOutAsync(accessToken);
-        
+
         if (!result.IsSuccess)
         {
             return BadRequest(new { errors = result.Errors });
         }
-        
+
         return Ok(new { message = "Logged out successfully" });
+    }
+
+    /// <summary>
+    /// Extracts the bearer token from the Authorization header
+    /// </summary>
+    private string? ExtractBearerToken()
+    {
+        var authHeader = Request.Headers.Authorization.ToString();
+        if (string.IsNullOrWhiteSpace(authHeader))
+            return null;
+
+        // Handle "Bearer <token>" format with proper parsing
+        const string bearerPrefix = "Bearer ";
+        if (authHeader.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader[bearerPrefix.Length..].Trim();
+        }
+
+        return null;
     }
 }

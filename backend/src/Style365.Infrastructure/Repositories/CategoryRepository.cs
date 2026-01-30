@@ -28,6 +28,7 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     public async Task<IEnumerable<Category>> GetTopLevelCategoriesAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(c => c.Products)
             .Where(c => c.IsActive && c.ParentCategoryId == null)
             .OrderBy(c => c.SortOrder)
             .ToListAsync(cancellationToken);
@@ -36,6 +37,7 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     public async Task<IEnumerable<Category>> GetSubCategoriesAsync(Guid parentCategoryId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(c => c.Products)
             .Where(c => c.IsActive && c.ParentCategoryId == parentCategoryId)
             .OrderBy(c => c.SortOrder)
             .ToListAsync(cancellationToken);
@@ -69,6 +71,14 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         return await _dbSet
             .Where(c => c.IsActive && c.ParentCategoryId == parentCategoryId)
+            .OrderBy(c => c.SortOrder)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Category>> GetAllWithProductCountsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(c => c.Products)
             .OrderBy(c => c.SortOrder)
             .ToListAsync(cancellationToken);
     }

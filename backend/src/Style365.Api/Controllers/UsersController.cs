@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Style365.Application.Features.Users.Commands.CreateUser;
+using Style365.Application.Features.Users.Queries.GetCustomers;
 using Style365.Application.Features.Users.Queries.GetUser;
 
 namespace Style365.Api.Controllers;
@@ -19,6 +20,49 @@ public class UsersController : ControllerBase
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    /// <summary>
+    /// Get all customers (paginated)
+    /// </summary>
+    /// <param name="page">Page number (default: 1)</param>
+    /// <param name="pageSize">Items per page (default: 20)</param>
+    /// <param name="search">Search term for filtering by name or email</param>
+    /// <param name="sortBy">Sort by field (name, email, createdAt)</param>
+    /// <param name="ascending">Sort ascending (default: false)</param>
+    /// <returns>Paginated list of customers</returns>
+    /// <response code="200">Customers retrieved successfully</response>
+    /// <response code="401">Unauthorized - JWT token required</response>
+    /// <response code="403">Forbidden - Admin role required</response>
+    [HttpGet]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> GetCustomers(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = "CreatedAt",
+        [FromQuery] bool ascending = false)
+    {
+        var query = new GetCustomersQuery
+        {
+            Page = page,
+            PageSize = pageSize,
+            SearchTerm = search,
+            SortBy = sortBy,
+            Ascending = ascending
+        };
+
+        var result = await _mediator.Send(query);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { errors = result.Errors });
+        }
+
+        return Ok(result.Data);
     }
 
     /// <summary>

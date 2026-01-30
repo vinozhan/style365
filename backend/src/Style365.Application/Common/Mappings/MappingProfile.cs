@@ -18,12 +18,14 @@ public class MappingProfile : Profile
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price.Amount))
             .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Price.Currency))
-            .ForMember(dest => dest.ComparePrice, opt => opt.MapFrom(src => src.ComparePrice!.Amount))
+            .ForMember(dest => dest.CompareAtPrice, opt => opt.MapFrom(src => src.ComparePrice!.Amount))
             .ForMember(dest => dest.CostPrice, opt => opt.MapFrom(src => src.CostPrice!.Amount))
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)));
 
-        CreateMap<ProductImage, ProductImageDto>();
+        CreateMap<ProductImage, ProductImageDto>()
+            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.ImageUrl))
+            .ForMember(dest => dest.IsPrimary, opt => opt.MapFrom(src => src.IsPrimary));
 
         CreateMap<ProductVariant, ProductVariantDto>()
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price!.Amount))

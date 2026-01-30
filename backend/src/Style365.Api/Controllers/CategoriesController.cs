@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Style365.Application.Features.Categories.Commands.CreateCategory;
 using Style365.Application.Features.Categories.Commands.DeleteCategory;
 using Style365.Application.Features.Categories.Commands.UpdateCategory;
+using Style365.Application.Features.Categories.Commands.UploadCategoryImage;
 using Style365.Application.Features.Categories.Queries.GetCategories;
 using Style365.Application.Features.Categories.Queries.GetCategoryById;
 
@@ -185,6 +186,53 @@ public class CategoriesController : ControllerBase
         };
 
         var result = await _mediator.Send(query);
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Upload an image for a category
+    /// </summary>
+    /// <param name="id">Category ID</param>
+    /// <param name="file">Image file to upload</param>
+    /// <returns>Upload result with image URL</returns>
+    /// <response code="200">Image uploaded successfully</response>
+    /// <response code="400">Invalid request or validation errors</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="404">Category not found</response>
+    [HttpPost("{id}/image")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(typeof(UploadCategoryImageResult), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(404)]
+    [RequestSizeLimit(10_000_000)] // 10MB limit
+    public async Task<IActionResult> UploadImage(Guid id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { errors = new[] { "No file provided" } });
+        }
+
+        var command = new UploadCategoryImageCommand
+        {
+            CategoryId = id,
+            FileStream = file.OpenReadStream(),
+            FileName = file.FileName,
+            ContentType = file.ContentType,
+            FileSize = file.Length
+        };
+
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            if (result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound(new { errors = result.Errors });
+            }
+            return BadRequest(new { errors = result.Errors });
+        }
+
         return Ok(result.Data);
     }
 }

@@ -28,6 +28,48 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
         builder.Property(pi => pi.IsMain)
             .HasDefaultValue(false);
 
+        // S3 Storage properties
+        builder.Property(pi => pi.S3Key)
+            .HasMaxLength(500);
+
+        builder.Property(pi => pi.ThumbnailSmallUrl)
+            .HasMaxLength(1000);
+
+        builder.Property(pi => pi.ThumbnailMediumUrl)
+            .HasMaxLength(1000);
+
+        builder.Property(pi => pi.ThumbnailLargeUrl)
+            .HasMaxLength(1000);
+
+        builder.Property(pi => pi.WebPUrl)
+            .HasMaxLength(1000);
+
+        // S3 Keys for deletion
+        builder.Property(pi => pi.ThumbnailSmallS3Key)
+            .HasMaxLength(500);
+
+        builder.Property(pi => pi.ThumbnailMediumS3Key)
+            .HasMaxLength(500);
+
+        builder.Property(pi => pi.ThumbnailLargeS3Key)
+            .HasMaxLength(500);
+
+        builder.Property(pi => pi.WebPS3Key)
+            .HasMaxLength(500);
+
+        // Image metadata
+        builder.Property(pi => pi.FileSize)
+            .HasDefaultValue(0);
+
+        builder.Property(pi => pi.Width)
+            .HasDefaultValue(0);
+
+        builder.Property(pi => pi.Height)
+            .HasDefaultValue(0);
+
+        builder.Property(pi => pi.OriginalFileName)
+            .HasMaxLength(500);
+
         builder.Property(pi => pi.CreatedAt)
             .IsRequired();
 
@@ -46,5 +88,8 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
 
         builder.HasIndex(pi => new { pi.ProductId, pi.SortOrder })
             .HasDatabaseName("IX_ProductImages_ProductId_SortOrder");
+
+        builder.HasIndex(pi => pi.S3Key)
+            .HasDatabaseName("IX_ProductImages_S3Key");
     }
 }

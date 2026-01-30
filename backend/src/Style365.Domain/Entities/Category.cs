@@ -74,6 +74,12 @@ public class Category : BaseEntity
         UpdateTimestamp();
     }
 
+    public void SetImageUrl(string? imageUrl)
+    {
+        ImageUrl = imageUrl?.Trim();
+        UpdateTimestamp();
+    }
+
     public bool IsSubCategory() => ParentCategoryId.HasValue;
 
     private static string ValidateName(string name)
