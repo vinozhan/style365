@@ -1,13 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Eye, Mail } from 'lucide-react';
+import { Eye, Mail, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { DataTable } from '@/components/common/DataTable';
 import { Pagination } from '@/components/common/Pagination';
 import { SearchInput } from '@/components/common/SearchInput';
-import { useCustomers } from '../hooks/useCustomers';
+import { useCustomers, useDeleteCustomer } from '../hooks/useCustomers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { Customer } from '@/types';
 
@@ -15,6 +26,8 @@ export function CustomersPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
 
   const { data, isLoading } = useCustomers({
     page,
@@ -23,6 +36,26 @@ export function CustomersPage() {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
+
+  const deleteCustomer = useDeleteCustomer();
+
+  const handleDeleteClick = (customer: Customer) => {
+    setCustomerToDelete(customer);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!customerToDelete) return;
+
+    try {
+      await deleteCustomer.mutateAsync(customerToDelete.id);
+      toast.success(`Customer "${customerToDelete.firstName} ${customerToDelete.lastName}" has been deleted`);
+      setDeleteDialogOpen(false);
+      setCustomerToDelete(null);
+    } catch {
+      toast.error('Failed to delete customer. Please try again.');
+    }
+  };
 
   const columns: ColumnDef<Customer>[] = [
     {
@@ -73,11 +106,21 @@ export function CustomersPage() {
     {
       id: 'actions',
       cell: ({ row }) => (
-        <Button variant="ghost" size="icon" asChild>
-          <Link to={`/customers/${row.original.id}`}>
-            <Eye className="h-4 w-4" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to={`/customers/${row.original.id}`}>
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={() => handleDeleteClick(row.original)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -120,6 +163,40 @@ export function CustomersPage() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{' '}
+              <span className="font-semibold">
+                {customerToDelete?.firstName} {customerToDelete?.lastName}
+              </span>
+              ? This action cannot be undone. The customer will be removed from both the
+              authentication system and the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteCustomer.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={deleteCustomer.isPending}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {deleteCustomer.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

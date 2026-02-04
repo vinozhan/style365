@@ -35,4 +35,8 @@ export const customerService = {
     });
     return response.data.items;
   },
+
+  async deleteCustomer(id: string): Promise<void> {
+    await apiClient.delete(`/users/${id}`);
+  },
 };

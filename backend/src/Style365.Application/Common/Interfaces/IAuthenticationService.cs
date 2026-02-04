@@ -15,6 +15,7 @@ public interface IAuthenticationService
     Task<Result<AuthenticationResult>> RefreshTokenAsync(string refreshToken);
     Task<Result<User?>> GetUserByAccessTokenAsync(string accessToken);
     Task<Result> SignOutAsync(string accessToken);
+    Task<Result> DeleteUserAsync(string cognitoUserId);
 }
 
 public class AuthenticationResult
