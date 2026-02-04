@@ -513,6 +513,43 @@ public class CognitoAuthenticationService : IAuthenticationService
         }
     }
 
+    public async Task<Result> DeleteUserAsync(string cognitoUserId)
+    {
+        try
+        {
+            _logger.LogInformation("Delete user request for CognitoUserId: {CognitoUserId}", cognitoUserId);
+
+            if (string.IsNullOrWhiteSpace(cognitoUserId))
+            {
+                return Result.Failure("Cognito user ID is required");
+            }
+
+            // Delete user from Cognito using AdminDeleteUser
+            // Note: We use the cognitoUserId (sub) as the username since that's how we registered users
+            var deleteRequest = new AdminDeleteUserRequest
+            {
+                UserPoolId = _authSettings.Cognito.UserPoolId,
+                Username = cognitoUserId
+            };
+
+            await _cognitoClient.AdminDeleteUserAsync(deleteRequest);
+
+            _logger.LogInformation("User deleted from Cognito successfully: {CognitoUserId}", cognitoUserId);
+            return Result.Success();
+        }
+        catch (UserNotFoundException)
+        {
+            _logger.LogWarning("User not found in Cognito during delete: {CognitoUserId}", cognitoUserId);
+            // Return success since the user doesn't exist in Cognito anyway
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to delete user from Cognito: {CognitoUserId}", cognitoUserId);
+            return Result.Failure($"Failed to delete user from Cognito: {ex.Message}");
+        }
+    }
+
     /// <summary>
     /// Safely extracts an attribute value from Cognito user attributes
     /// </summary>

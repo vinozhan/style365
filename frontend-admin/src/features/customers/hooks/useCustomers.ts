@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { customerService, type CustomerFilters } from '../services/customerService';
 
 export function useCustomers(filters: CustomerFilters = {}) {
@@ -22,5 +22,16 @@ export function useCustomerOrders(customerId: string) {
     queryKey: ['customer', customerId, 'orders'],
     queryFn: () => customerService.getCustomerOrders(customerId),
     enabled: !!customerId,
+  });
+}
+
+export function useDeleteCustomer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => customerService.deleteCustomer(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    },
   });
 }

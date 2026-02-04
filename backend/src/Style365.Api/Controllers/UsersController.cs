@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Style365.Application.Features.Users.Commands.CreateUser;
+using Style365.Application.Features.Users.Commands.DeleteUser;
 using Style365.Application.Features.Users.Queries.GetCustomers;
 using Style365.Application.Features.Users.Queries.GetUser;
 
@@ -115,5 +116,35 @@ public class UsersController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetUser), new { id = result.Data!.Id }, result.Data);
+    }
+
+    /// <summary>
+    /// Delete a user (Admin only)
+    /// </summary>
+    /// <param name="id">Unique user identifier</param>
+    /// <returns>No content on success</returns>
+    /// <response code="204">User deleted successfully</response>
+    /// <response code="400">Cannot delete admin users or deletion failed</response>
+    /// <response code="404">User not found</response>
+    /// <response code="401">Unauthorized - JWT token required</response>
+    /// <response code="403">Forbidden - Admin role required</response>
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        var command = new DeleteUserCommand { UserId = id };
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(new { errors = result.Errors });
+        }
+
+        return NoContent();
     }
 }
