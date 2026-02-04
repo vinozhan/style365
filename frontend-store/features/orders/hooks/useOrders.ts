@@ -14,6 +14,9 @@ export function useMyOrders(page = 1, pageSize = 10) {
   });
 }
 
+// Alias for convenience
+export const useOrders = useMyOrders;
+
 export function useOrder(id: string) {
   return useQuery({
     queryKey: ['order', id],
@@ -23,10 +26,12 @@ export function useOrder(id: string) {
   });
 }
 
+// Alias for convenience
+export const useOrderById = useOrder;
+
 export function useTrackOrder() {
   return useMutation({
-    mutationFn: ({ orderNumber, email }: { orderNumber: string; email: string }) =>
-      orderService.trackOrder(orderNumber, email),
+    mutationFn: (orderNumber: string) => orderService.trackOrder(orderNumber, ''),
     onError: (error: Error) => {
       toast.error(error.message || 'Order not found');
     },

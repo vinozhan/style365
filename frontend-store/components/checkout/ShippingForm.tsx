@@ -25,13 +25,13 @@ const shippingSchema = z.object({
   addressLine1: z.string().min(1, 'Address is required'),
   addressLine2: z.string().optional(),
   city: z.string().min(1, 'City is required'),
-  state: z.string().min(1, 'State/Province is required'),
+  stateProvince: z.string().min(1, 'State/Province is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
   saveAddress: z.boolean().optional(),
 });
 
-type ShippingFormData = z.infer<typeof shippingSchema>;
+export type ShippingFormData = z.infer<typeof shippingSchema>;
 
 interface ShippingFormProps {
   onSubmit: (data: ShippingFormData) => void;
@@ -57,7 +57,7 @@ export function ShippingForm({ onSubmit, isLoading }: ShippingFormProps) {
       addressLine1: '',
       addressLine2: '',
       city: '',
-      state: '',
+      stateProvince: '',
       postalCode: '',
       country: 'LK',
       saveAddress: false,
@@ -153,14 +153,14 @@ export function ShippingForm({ onSubmit, isLoading }: ShippingFormProps) {
         </div>
 
         <div>
-          <Label htmlFor="state">State/Province *</Label>
+          <Label htmlFor="stateProvince">State/Province *</Label>
           <Input
-            id="state"
-            {...register('state')}
-            className={errors.state ? 'border-red-500' : ''}
+            id="stateProvince"
+            {...register('stateProvince')}
+            className={errors.stateProvince ? 'border-red-500' : ''}
           />
-          {errors.state && (
-            <p className="mt-1 text-xs text-red-500">{errors.state.message}</p>
+          {errors.stateProvince && (
+            <p className="mt-1 text-xs text-red-500">{errors.stateProvince.message}</p>
           )}
         </div>
 

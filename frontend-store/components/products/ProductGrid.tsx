@@ -20,7 +20,7 @@ export function ProductGrid({ products, loading, columns = 4 }: ProductGridProps
       <div className={`grid gap-4 sm:gap-6 ${gridCols[columns]}`}>
         {Array.from({ length: columns * 2 }).map((_, i) => (
           <div key={i} className="space-y-3">
-            <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+            <Skeleton className="aspect-3/4 w-full rounded-lg" />
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
           </div>

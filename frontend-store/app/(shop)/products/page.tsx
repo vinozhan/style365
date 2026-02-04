@@ -1,17 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ProductFilters } from '@/components/products/ProductFilters';
 import { ProductSort } from '@/components/products/ProductSort';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import type { ProductFilters as FilterType } from '@/types';
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -109,5 +110,31 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-custom py-8">
+          <Skeleton className="mb-8 h-10 w-48" />
+          <div className="flex gap-8">
+            <aside className="hidden w-64 flex-shrink-0 lg:block">
+              <Skeleton className="h-96 rounded-lg" />
+            </aside>
+            <div className="flex-1">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-80 rounded-lg" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }

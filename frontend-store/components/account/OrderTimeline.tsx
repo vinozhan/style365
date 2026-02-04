@@ -4,9 +4,9 @@ import type { OrderStatus } from '@/types';
 
 interface OrderTimelineProps {
   status: OrderStatus;
-  orderDate: string;
-  shippedDate?: string;
-  deliveredDate?: string;
+  createdAt: string;
+  shippedAt?: string;
+  deliveredAt?: string;
 }
 
 const statusSteps = [
@@ -18,18 +18,21 @@ const statusSteps = [
 
 const statusOrder: Record<OrderStatus, number> = {
   Pending: 0,
+  Confirmed: 1,
   Processing: 1,
   Shipped: 2,
+  OutForDelivery: 2,
   Delivered: 3,
   Cancelled: -1,
+  Returned: -1,
   Refunded: -1,
 };
 
 export function OrderTimeline({
   status,
-  orderDate,
-  shippedDate,
-  deliveredDate,
+  createdAt,
+  shippedAt,
+  deliveredAt,
 }: OrderTimelineProps) {
   const currentIndex = statusOrder[status];
 
@@ -96,9 +99,9 @@ export function OrderTimeline({
 
               {/* Date */}
               <p className="mt-1 text-center text-xs text-slate-500">
-                {step.status === 'Pending' && orderDate && new Date(orderDate).toLocaleDateString()}
-                {step.status === 'Shipped' && shippedDate && new Date(shippedDate).toLocaleDateString()}
-                {step.status === 'Delivered' && deliveredDate && new Date(deliveredDate).toLocaleDateString()}
+                {step.status === 'Pending' && createdAt && new Date(createdAt).toLocaleDateString()}
+                {step.status === 'Shipped' && shippedAt && new Date(shippedAt).toLocaleDateString()}
+                {step.status === 'Delivered' && deliveredAt && new Date(deliveredAt).toLocaleDateString()}
               </p>
             </div>
           );

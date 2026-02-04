@@ -15,12 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { User } from '@/types';
+import type { UserProfile } from '@/types';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  phone: z.string().optional(),
+  phoneNumber: z.string().optional(),
   dateOfBirth: z.string().optional(),
   gender: z.enum(['Male', 'Female', 'Other', 'PreferNotToSay']).optional(),
   bio: z.string().max(500).optional(),
@@ -29,12 +29,12 @@ const profileSchema = z.object({
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
 interface ProfileFormProps {
-  user: User;
+  profile: UserProfile;
   onSubmit: (data: ProfileFormData) => void;
   isLoading?: boolean;
 }
 
-export function ProfileForm({ user, onSubmit, isLoading }: ProfileFormProps) {
+export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) {
   const {
     register,
     handleSubmit,
@@ -44,12 +44,12 @@ export function ProfileForm({ user, onSubmit, isLoading }: ProfileFormProps) {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      phone: user.phone || '',
-      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '',
-      gender: user.gender,
-      bio: user.bio || '',
+      firstName: profile.firstName || '',
+      lastName: profile.lastName || '',
+      phoneNumber: profile.phoneNumber || '',
+      dateOfBirth: profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : '',
+      gender: profile.gender as ProfileFormData['gender'],
+      bio: profile.bio || '',
     },
   });
 
@@ -85,14 +85,14 @@ export function ProfileForm({ user, onSubmit, isLoading }: ProfileFormProps) {
 
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input id="email" value={user.email} disabled className="bg-slate-50" />
+        <Input id="email" value={profile.email} disabled className="bg-slate-50" />
         <p className="mt-1 text-xs text-slate-500">Email cannot be changed</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" type="tel" {...register('phone')} />
+          <Label htmlFor="phoneNumber">Phone</Label>
+          <Input id="phoneNumber" type="tel" {...register('phoneNumber')} />
         </div>
 
         <div>

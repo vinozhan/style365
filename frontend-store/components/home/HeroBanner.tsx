@@ -1,16 +1,16 @@
 import Link from 'next/link';
-import Image from 'next/image';
+//import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 export function HeroBanner() {
   return (
-    <section className="relative h-[500px] w-full overflow-hidden bg-slate-900 md:h-[600px]">
+    <section className="relative h-125 w-full overflow-hidden bg-slate-900 md:h-150">
       {/* Background image placeholder - replace with actual image */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/80 to-transparent" />
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50"
         style={{
-          backgroundImage: "url('/images/hero-bg.jpg')",
+          backgroundImage: "url('/images/hero-bg.png')",
         }}
       />
 
@@ -30,7 +30,7 @@ export function HeroBanner() {
             <Button size="lg" asChild>
               <Link href="/products">Shop Now</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900" asChild>
+            <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white hover:text-slate-900" asChild>
               <Link href="/categories">Browse Categories</Link>
             </Button>
           </div>
@@ -38,7 +38,7 @@ export function HeroBanner() {
       </div>
 
       {/* Decorative elements */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-white to-transparent" />
     </section>
   );
 }

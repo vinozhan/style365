@@ -11,15 +11,19 @@ import type { PaymentMethod } from '@/types';
 
 const paymentIcons: Record<PaymentMethod, React.ComponentType<{ className?: string }>> = {
   CreditCard: CreditCard,
+  DebitCard: CreditCard,
   CashOnDelivery: Banknote,
   BankTransfer: Building2,
+  DigitalWallet: CreditCard,
   PayHere: CreditCard,
 };
 
 const paymentNames: Record<PaymentMethod, string> = {
-  CreditCard: 'Credit/Debit Card',
+  CreditCard: 'Credit Card',
+  DebitCard: 'Debit Card',
   CashOnDelivery: 'Cash on Delivery',
   BankTransfer: 'Bank Transfer',
+  DigitalWallet: 'Digital Wallet',
   PayHere: 'PayHere',
 };
 
@@ -70,7 +74,7 @@ export function OrderReview({
           <p>{shippingAddress.addressLine1}</p>
           {shippingAddress.addressLine2 && <p>{shippingAddress.addressLine2}</p>}
           <p>
-            {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
+            {shippingAddress.city}, {shippingAddress.stateProvince} {shippingAddress.postalCode}
           </p>
           <p>{shippingAddress.country}</p>
           <p className="mt-2">{shippingAddress.phone}</p>
@@ -99,10 +103,10 @@ export function OrderReview({
         <div className="mt-4 space-y-4">
           {cart.items.map((item) => (
             <div key={item.id} className="flex gap-4">
-              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded bg-slate-100">
-                {item.imageUrl ? (
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-slate-100">
+                {item.productImage ? (
                   <Image
-                    src={item.imageUrl}
+                    src={item.productImage}
                     alt={item.productName}
                     fill
                     className="object-cover"
@@ -121,7 +125,7 @@ export function OrderReview({
                   )}
                   <p className="text-sm text-slate-500">Qty: {item.quantity}</p>
                 </div>
-                <p className="font-medium">{formatCurrency(item.totalPrice)}</p>
+                <p className="font-medium">{formatCurrency(item.subTotal)}</p>
               </div>
             </div>
           ))}

@@ -60,7 +60,7 @@ export function ProductCard({ product, showQuickView = true }: ProductCardProps)
     <div className="group relative">
       {/* Image container */}
       <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-slate-100">
+        <div className="relative aspect-3/4 overflow-hidden rounded-lg bg-slate-100">
           {product.mainImageUrl ? (
             <Image
               src={product.mainImageUrl}
@@ -110,7 +110,7 @@ export function ProductCard({ product, showQuickView = true }: ProductCardProps)
           </button>
 
           {/* Hover actions */}
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="absolute bottom-0 left-0 right-0 translate-y-full bg-linear-to-t from-black/60 to-transparent p-3 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
             <div className="flex gap-2">
               <Button
                 size="sm"

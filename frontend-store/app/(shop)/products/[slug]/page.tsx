@@ -13,6 +13,7 @@ import { ProductGallery } from '@/components/products/ProductGallery';
 import { ProductVariants } from '@/components/products/ProductVariants';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { ProductGrid } from '@/components/products/ProductGrid';
+import { ProductReviews } from '@/components/products/ProductReviews';
 import { useProduct, useProductsByCategory } from '@/features/products/hooks/useProducts';
 import { useWishlistStatus, useToggleWishlist } from '@/features/wishlists/hooks/useWishlist';
 import { useAuthStore } from '@/stores/authStore';
@@ -247,7 +248,7 @@ export default function ProductDetailPage() {
           </dl>
         </TabsContent>
         <TabsContent value="reviews" className="mt-6">
-          <p className="text-slate-600">Reviews coming soon...</p>
+          <ProductReviews productId={product.id} />
         </TabsContent>
       </Tabs>
 

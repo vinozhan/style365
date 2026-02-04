@@ -93,7 +93,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               key={image.id}
               onClick={() => setSelectedIndex(index)}
               className={cn(
-                'relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all',
+                'relative h-20 w-20 shrink-0 overflow-hidden rounded-md border-2 transition-all',
                 index === selectedIndex ? 'border-slate-900' : 'border-transparent hover:border-slate-300'
               )}
             >

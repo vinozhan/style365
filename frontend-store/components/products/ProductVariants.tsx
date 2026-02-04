@@ -57,7 +57,7 @@ export function ProductVariants({ variants, selectedVariant, onSelect }: Product
                   onClick={() => handleColorSelect(color)}
                   disabled={!isAvailable}
                   className={cn(
-                    'relative h-10 min-w-[60px] rounded-md border px-4 text-sm font-medium transition-all',
+                    'relative h-10 min-w-15 rounded-md border px-4 text-sm font-medium transition-all',
                     isSelected
                       ? 'border-slate-900 bg-slate-900 text-white'
                       : 'border-slate-300 hover:border-slate-400',

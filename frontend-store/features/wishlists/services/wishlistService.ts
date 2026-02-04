@@ -1,17 +1,25 @@
 import { apiClient } from '@/lib/api/client';
-import type { WishlistStatus, Product } from '@/types';
+import type { WishlistStatus } from '@/types';
 
-export interface WishlistItem {
+export interface WishlistItemDto {
   id: string;
   productId: string;
-  product: Product;
+  productName: string;
+  productSlug: string;
+  productPrice: number;
+  productImage?: string;
+  isInStock: boolean;
   addedAt: string;
 }
 
 export interface Wishlist {
   id: string;
   name: string;
-  items: WishlistItem[];
+  isDefault: boolean;
+  isPublic: boolean;
+  itemCount: number;
+  createdAt: string;
+  items: WishlistItemDto[];
 }
 
 export const wishlistService = {

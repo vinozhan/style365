@@ -43,10 +43,10 @@ export const productService = {
   },
 
   async getFeaturedProducts(limit = 8): Promise<Product[]> {
-    const response = await apiClient.get<Product[]>('/products/featured', {
+    const response = await apiClient.get<PaginatedResponse<Product>>('/products/featured', {
       params: { limit },
     });
-    return response.data;
+    return response.data.items;
   },
 
   async searchProducts(

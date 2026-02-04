@@ -96,6 +96,9 @@ export function useRemoveCartItem() {
   });
 }
 
+// Alias for convenience
+export const useRemoveFromCart = useRemoveCartItem;
+
 export function useClearCart() {
   const queryClient = useQueryClient();
   const { clearCartOptimistic } = useCartStore();

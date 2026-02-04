@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +12,7 @@ import { OrderTimeline, AddressCard } from '@/components/account';
 import { useOrderById } from '@/features/orders/hooks/useOrders';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
-export default function OrderDetailPage() {
+function OrderDetailContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const orderId = params.id as string;
@@ -65,7 +66,7 @@ export default function OrderDetailPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">Order #{order.orderNumber}</h1>
-          <p className="text-sm text-slate-500">Placed on {formatDate(order.orderDate)}</p>
+          <p className="text-sm text-slate-500">Placed on {formatDate(order.createdAt)}</p>
         </div>
       </div>
 
@@ -74,9 +75,9 @@ export default function OrderDetailPage() {
         <h2 className="mb-4 font-semibold">Order Status</h2>
         <OrderTimeline
           status={order.status}
-          orderDate={order.orderDate}
-          shippedDate={order.shippedDate}
-          deliveredDate={order.deliveredDate}
+          createdAt={order.createdAt}
+          shippedAt={order.shippedAt}
+          deliveredAt={order.deliveredAt}
         />
       </div>
 
@@ -91,9 +92,9 @@ export default function OrderDetailPage() {
               {order.items.map((item) => (
                 <div key={item.id} className="flex gap-4 p-4">
                   <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                    {item.productImageUrl ? (
+                    {item.productImage ? (
                       <Image
-                        src={item.productImageUrl}
+                        src={item.productImage}
                         alt={item.productName}
                         fill
                         className="object-cover"
@@ -112,7 +113,7 @@ export default function OrderDetailPage() {
                       )}
                       <p className="text-sm text-slate-500">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-medium">{formatCurrency(item.totalPrice)}</p>
+                    <p className="font-medium">{formatCurrency(item.lineTotal)}</p>
                   </div>
                 </div>
               ))}
@@ -153,11 +154,11 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Payment info */}
-          {order.payment && (
+          {order.payments.length > 0 && (
             <div className="rounded-lg border p-4">
               <h2 className="mb-4 font-semibold">Payment</h2>
-              <p className="text-sm text-slate-600">{order.payment.paymentMethod}</p>
-              <p className="text-sm text-slate-500">Status: {order.payment.status}</p>
+              <p className="text-sm text-slate-600">{order.payments[0].method}</p>
+              <p className="text-sm text-slate-500">Status: {order.payments[0].status}</p>
             </div>
           )}
 
@@ -177,5 +178,21 @@ export default function OrderDetailPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function OrderDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div>
+          <Skeleton className="mb-6 h-8 w-48" />
+          <Skeleton className="mb-6 h-24 rounded-lg" />
+          <Skeleton className="h-64 rounded-lg" />
+        </div>
+      }
+    >
+      <OrderDetailContent />
+    </Suspense>
   );
 }

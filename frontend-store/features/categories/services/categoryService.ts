@@ -1,12 +1,16 @@
 import { apiClient } from '@/lib/api/client';
 import type { Category } from '@/types';
 
+interface GetCategoriesResponse {
+  categories: Category[];
+}
+
 export const categoryService = {
   async getCategories(activeOnly = true): Promise<Category[]> {
-    const response = await apiClient.get<Category[]>('/categories', {
-      params: { activeOnly },
+    const response = await apiClient.get<GetCategoriesResponse>('/categories', {
+      params: { activeOnly, includeSubCategories: true },
     });
-    return response.data;
+    return response.data.categories;
   },
 
   async getCategoryById(id: string): Promise<Category> {
@@ -33,7 +37,7 @@ export const categoryService = {
   },
 
   async getCategoryTree(): Promise<Category[]> {
-    const response = await apiClient.get<Category[]>('/categories/tree');
-    return response.data;
+    const response = await apiClient.get<GetCategoriesResponse>('/categories/tree');
+    return response.data.categories;
   },
 };

@@ -30,13 +30,13 @@ export function Header() {
   const totalItems = cart?.totalItems ?? 0;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white">
+    <header className="sticky top-0 z-40 w-full bg-slate-900 text-white shadow-lg">
       {/* Top bar */}
-      <div className="hidden border-b bg-slate-900 text-white md:block">
-        <div className="container-custom flex h-8 items-center justify-between text-xs">
+      <div className="hidden border-b border-slate-700 md:block">
+        <div className="container-custom flex h-8 items-center justify-between text-xs text-slate-300">
           <p>Free shipping on orders over Rs. 5,000</p>
           <div className="flex items-center gap-4">
-            <Link href="/track-order" className="hover:underline">
+            <Link href="/track-order" className="hover:text-white hover:underline">
               Track Order
             </Link>
             <span>|</span>
@@ -52,7 +52,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="text-white hover:bg-slate-800 md:hidden"
             onClick={openMobileMenu}
             aria-label="Open menu"
           >
@@ -61,12 +61,12 @@ export function Header() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight">Style365</span>
+            <span className="text-xl font-bold tracking-tight text-white">Style365</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
-            <Link href="/products" className="text-sm font-medium hover:text-slate-600">
+            <Link href="/products" className="text-sm font-medium text-slate-200 hover:text-white">
               All Products
             </Link>
             {categories?.slice(0, 5).map((category) => (
@@ -78,13 +78,13 @@ export function Header() {
               >
                 <Link
                   href={`/categories/${category.slug}`}
-                  className="flex items-center gap-1 text-sm font-medium hover:text-slate-600"
+                  className="flex items-center gap-1 text-sm font-medium text-slate-200 hover:text-white"
                 >
                   {category.name}
                   {category.subCategories?.length > 0 && <ChevronDown className="h-3 w-3" />}
                 </Link>
                 {category.subCategories?.length > 0 && hoveredCategory === category.id && (
-                  <div className="absolute left-0 top-full z-50 w-48 rounded-md border bg-white py-2 shadow-lg">
+                  <div className="absolute left-0 top-full z-50 w-48 rounded-md border bg-white py-2 text-slate-900 shadow-lg">
                     {category.subCategories.map((sub) => (
                       <Link
                         key={sub.id}
@@ -108,7 +108,7 @@ export function Header() {
               size="icon"
               onClick={openSearch}
               aria-label="Search"
-              className="hidden sm:flex"
+              className="hidden text-white hover:bg-slate-800 sm:flex"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -116,7 +116,7 @@ export function Header() {
             {/* Wishlist */}
             {isAuthenticated && (
               <Link href="/account/wishlist">
-                <Button variant="ghost" size="icon" aria-label="Wishlist">
+                <Button variant="ghost" size="icon" aria-label="Wishlist" className="text-white hover:bg-slate-800">
                   <Heart className="h-5 w-5" />
                 </Button>
               </Link>
@@ -126,7 +126,7 @@ export function Header() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Account">
+                  <Button variant="ghost" size="icon" aria-label="Account" className="text-white hover:bg-slate-800">
                     <User className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -150,7 +150,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-slate-800">
                   Login
                 </Button>
               </Link>
@@ -160,13 +160,13 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative text-white hover:bg-slate-800"
               onClick={openCart}
               aria-label="Cart"
             >
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-xs text-white">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs text-slate-900">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}

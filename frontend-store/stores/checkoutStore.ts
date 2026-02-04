@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { OrderAddress } from '@/types';
+import type { OrderAddress, PaymentMethod } from '@/types';
 
 export type CheckoutStep = 'shipping' | 'payment' | 'review';
 
@@ -13,18 +13,18 @@ interface CheckoutState {
   useSameBillingAddress: boolean;
   shippingMethod: string | null;
   shippingCost: number;
-  paymentMethod: string | null;
+  paymentMethod: PaymentMethod | null;
   notes: string;
 
   // Actions
   setStep: (step: CheckoutStep) => void;
   nextStep: () => void;
   prevStep: () => void;
-  setShippingAddress: (address: OrderAddress) => void;
-  setBillingAddress: (address: OrderAddress) => void;
+  setShippingAddress: (address: OrderAddress | null) => void;
+  setBillingAddress: (address: OrderAddress | null) => void;
   setUseSameBillingAddress: (same: boolean) => void;
   setShippingMethod: (method: string, cost: number) => void;
-  setPaymentMethod: (method: string) => void;
+  setPaymentMethod: (method: PaymentMethod) => void;
   setNotes: (notes: string) => void;
   reset: () => void;
 

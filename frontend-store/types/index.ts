@@ -190,7 +190,8 @@ export type PaymentMethod =
   | 'DebitCard'
   | 'BankTransfer'
   | 'CashOnDelivery'
-  | 'DigitalWallet';
+  | 'DigitalWallet'
+  | 'PayHere';
 
 export type PaymentStatus =
   | 'Pending'
@@ -204,6 +205,7 @@ export type PaymentStatus =
 export interface OrderAddress {
   firstName: string;
   lastName: string;
+  email?: string;
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -244,6 +246,10 @@ export interface Order {
   customerEmail: string;
   customerPhone?: string;
   status: OrderStatus;
+  subtotal: number;
+  shippingAmount: number;
+  taxAmount: number;
+  discountAmount: number;
   totalAmount: number;
   currency: string;
   createdAt: string;
@@ -272,6 +278,7 @@ export interface Review {
   title: string;
   comment: string;
   isVerifiedPurchase: boolean;
+  helpfulCount: number;
   status: string;
   createdAt: string;
   updatedAt: string;

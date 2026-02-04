@@ -38,7 +38,7 @@ export default function ProfilePage() {
       <h1 className="mb-6 text-2xl font-bold">My Profile</h1>
       <div className="rounded-lg border p-6">
         <ProfileForm
-          user={profile}
+          profile={profile}
           onSubmit={handleSubmit}
           isLoading={updateProfile.isPending}
         />

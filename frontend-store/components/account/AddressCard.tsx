@@ -43,7 +43,7 @@ export function AddressCard({
               <p className="text-sm text-slate-600">{address.addressLine2}</p>
             )}
             <p className="text-sm text-slate-600">
-              {address.city}, {address.state} {address.postalCode}
+              {address.city}, {address.stateProvince} {address.postalCode}
             </p>
             <p className="text-sm text-slate-600">{address.country}</p>
             <p className="mt-2 text-sm text-slate-500">{address.phone}</p>

@@ -99,8 +99,8 @@ export function useResetPassword() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (data: { email: string; code: string; newPassword: string }) =>
-      authService.resetPassword(data),
+    mutationFn: (data: { email: string; token: string; newPassword: string }) =>
+      authService.resetPassword({ email: data.email, code: data.token, newPassword: data.newPassword }),
     onSuccess: () => {
       toast.success('Password reset successful! Please login with your new password.');
       router.push('/login');
@@ -115,14 +115,26 @@ export function useConfirmEmail() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (data: { email: string; code: string }) =>
-      authService.confirmEmail(data.email, data.code),
+    mutationFn: (data: { userId: string; token: string }) =>
+      authService.confirmEmail(data.userId, data.token),
     onSuccess: () => {
       toast.success('Email confirmed! You can now login.');
       router.push('/login');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to confirm email');
+    },
+  });
+}
+
+export function useResendConfirmation() {
+  return useMutation({
+    mutationFn: (email: string) => authService.resendConfirmation(email),
+    onSuccess: () => {
+      toast.success('Confirmation email sent!');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to send confirmation email');
     },
   });
 }

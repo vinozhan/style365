@@ -40,8 +40,8 @@ export const authService = {
     return response.data;
   },
 
-  async confirmEmail(email: string, code: string): Promise<{ message: string }> {
-    const response = await apiClient.post('/auth/confirm-email', { email, code });
+  async confirmEmail(userId: string, token: string): Promise<{ message: string }> {
+    const response = await apiClient.post('/auth/confirm-email', { userId, token });
     return response.data;
   },
 

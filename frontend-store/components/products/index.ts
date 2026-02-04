@@ -5,3 +5,5 @@ export { ProductSort } from './ProductSort';
 export { ProductGallery } from './ProductGallery';
 export { ProductVariants } from './ProductVariants';
 export { AddToCartButton } from './AddToCartButton';
+export { ProductReviews } from './ProductReviews';
+export { WishlistButton } from './WishlistButton';

@@ -18,7 +18,7 @@ const sortOptions = [
 export function ProductSort({ value, onChange }: ProductSortProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-45">
         <SelectValue placeholder="Sort by" />
       </SelectTrigger>
       <SelectContent>

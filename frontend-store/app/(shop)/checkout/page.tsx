@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronRight, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { CheckoutSteps, ShippingForm, PaymentMethods, OrderReview } from '@/components/checkout';
+import type { ShippingFormData } from '@/components/checkout';
 import { CartSummary } from '@/components/cart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCart } from '@/features/cart/hooks/useCart';
@@ -26,7 +27,7 @@ export default function CheckoutPage() {
     paymentMethod,
     setShippingAddress,
     setPaymentMethod,
-    clearCheckout,
+    reset: clearCheckout,
   } = useCheckoutStore();
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('shipping');
@@ -38,8 +39,20 @@ export default function CheckoutPage() {
     }
   }, [cart, cartLoading, router]);
 
-  const handleShippingSubmit = (data: typeof shippingAddress) => {
-    setShippingAddress(data);
+  const handleShippingSubmit = (data: ShippingFormData) => {
+    // Transform ShippingFormData to OrderAddress
+    setShippingAddress({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      addressLine1: data.addressLine1,
+      addressLine2: data.addressLine2,
+      city: data.city,
+      stateProvince: data.stateProvince,
+      postalCode: data.postalCode,
+      country: data.country,
+    });
     setCurrentStep('payment');
   };
 
@@ -60,7 +73,7 @@ export default function CheckoutPage() {
           addressLine1: shippingAddress.addressLine1,
           addressLine2: shippingAddress.addressLine2,
           city: shippingAddress.city,
-          state: shippingAddress.state,
+          stateProvince: shippingAddress.stateProvince,
           postalCode: shippingAddress.postalCode,
           country: shippingAddress.country,
         },
@@ -71,7 +84,7 @@ export default function CheckoutPage() {
           addressLine1: shippingAddress.addressLine1,
           addressLine2: shippingAddress.addressLine2,
           city: shippingAddress.city,
-          state: shippingAddress.state,
+          stateProvince: shippingAddress.stateProvince,
           postalCode: shippingAddress.postalCode,
           country: shippingAddress.country,
         },

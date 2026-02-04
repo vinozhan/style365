@@ -13,6 +13,11 @@ export function useProductReviews(productId: string, params: GetReviewsParams = 
   });
 }
 
+// Alias with page/pageSize params for convenience
+export function useReviews(productId: string, page = 1, pageSize = 10) {
+  return useProductReviews(productId, { page, pageSize });
+}
+
 export function useReviewStats(productId: string) {
   return useQuery({
     queryKey: ['reviews', 'stats', productId],
@@ -22,14 +27,15 @@ export function useReviewStats(productId: string) {
   });
 }
 
-export function useCreateReview(productId: string) {
+export function useCreateReview() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateReviewInput) => reviewService.createReview(productId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reviews', productId] });
-      queryClient.invalidateQueries({ queryKey: ['reviews', 'stats', productId] });
+    mutationFn: (data: CreateReviewInput & { productId: string }) =>
+      reviewService.createReview(data.productId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', variables.productId] });
+      queryClient.invalidateQueries({ queryKey: ['reviews', 'stats', variables.productId] });
       toast.success('Review submitted successfully!');
     },
     onError: (error: Error) => {

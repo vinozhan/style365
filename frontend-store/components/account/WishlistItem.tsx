@@ -8,23 +8,23 @@ import { Badge } from '@/components/ui/badge';
 import { useRemoveFromWishlist } from '@/features/wishlists/hooks/useWishlist';
 import { useAddToCart } from '@/features/cart/hooks/useCart';
 import { formatCurrency } from '@/lib/utils';
-import type { Product } from '@/types';
+import type { WishlistItemDto } from '@/features/wishlists/services/wishlistService';
 
 interface WishlistItemProps {
-  product: Product;
+  item: WishlistItemDto;
 }
 
-export function WishlistItem({ product }: WishlistItemProps) {
+export function WishlistItem({ item }: WishlistItemProps) {
   const removeFromWishlist = useRemoveFromWishlist();
   const addToCart = useAddToCart();
 
   const handleRemove = () => {
-    removeFromWishlist.mutate(product.id);
+    removeFromWishlist.mutate(item.productId);
   };
 
   const handleAddToCart = () => {
     addToCart.mutate({
-      productId: product.id,
+      productId: item.productId,
       quantity: 1,
     });
   };
@@ -32,12 +32,12 @@ export function WishlistItem({ product }: WishlistItemProps) {
   return (
     <div className="flex gap-4 rounded-lg border p-4">
       {/* Product image */}
-      <Link href={`/products/${product.slug}`} className="flex-shrink-0">
+      <Link href={`/products/${item.productSlug}`} className="shrink-0">
         <div className="relative h-24 w-24 overflow-hidden rounded-lg bg-slate-100 sm:h-32 sm:w-32">
-          {product.images[0]?.imageUrl ? (
+          {item.productImage ? (
             <Image
-              src={product.images[0].imageUrl}
-              alt={product.name}
+              src={item.productImage}
+              alt={item.productName}
               fill
               className="object-cover"
             />
@@ -52,33 +52,17 @@ export function WishlistItem({ product }: WishlistItemProps) {
       {/* Product details */}
       <div className="flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <Link
-              href={`/products/${product.slug}`}
-              className="font-medium hover:text-slate-600"
-            >
-              {product.name}
-            </Link>
-            {product.brandName && (
-              <p className="mt-1 text-sm text-slate-500">{product.brandName}</p>
-            )}
-          </div>
-          <div className="text-right">
-            {product.compareAtPrice && product.compareAtPrice > product.price ? (
-              <>
-                <p className="text-sm text-slate-500 line-through">
-                  {formatCurrency(product.compareAtPrice)}
-                </p>
-                <p className="font-semibold text-red-600">{formatCurrency(product.price)}</p>
-              </>
-            ) : (
-              <p className="font-semibold">{formatCurrency(product.price)}</p>
-            )}
-          </div>
+          <Link
+            href={`/products/${item.productSlug}`}
+            className="font-medium hover:text-slate-600"
+          >
+            {item.productName}
+          </Link>
+          <p className="font-semibold">{formatCurrency(item.productPrice)}</p>
         </div>
 
         <div className="mt-2">
-          {product.isInStock ? (
+          {item.isInStock ? (
             <Badge variant="secondary" className="bg-green-100 text-green-800">
               In Stock
             </Badge>
@@ -93,7 +77,7 @@ export function WishlistItem({ product }: WishlistItemProps) {
           <Button
             size="sm"
             onClick={handleAddToCart}
-            disabled={!product.isInStock || addToCart.isPending}
+            disabled={!item.isInStock || addToCart.isPending}
           >
             {addToCart.isPending ? (
               <Loader2 className="mr-1 h-4 w-4 animate-spin" />

@@ -20,7 +20,7 @@ export function CartItem({ item }: CartItemProps) {
   const isRemoving = removeItem.isPending;
 
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity < 1 || newQuantity > item.stockQuantity) return;
+    if (newQuantity < 1) return;
     updateItem.mutate({ itemId: item.id, quantity: newQuantity });
   };
 
@@ -31,11 +31,11 @@ export function CartItem({ item }: CartItemProps) {
   return (
     <div className="flex gap-4 py-4 border-b last:border-b-0">
       {/* Product image */}
-      <Link href={`/products/${item.productSlug}`} className="flex-shrink-0">
+      <Link href={`/products/${item.productSlug}`} className="shrink-0">
         <div className="relative h-24 w-24 overflow-hidden rounded-lg bg-slate-100">
-          {item.imageUrl ? (
+          {item.productImage ? (
             <Image
-              src={item.imageUrl}
+              src={item.productImage}
               alt={item.productName}
               fill
               className="object-cover"
@@ -62,7 +62,7 @@ export function CartItem({ item }: CartItemProps) {
               <p className="mt-1 text-sm text-slate-500">{item.variantName}</p>
             )}
           </div>
-          <p className="font-medium">{formatCurrency(item.totalPrice)}</p>
+          <p className="font-medium">{formatCurrency(item.subTotal)}</p>
         </div>
 
         <div className="mt-auto flex items-center justify-between">
@@ -89,7 +89,7 @@ export function CartItem({ item }: CartItemProps) {
               size="icon"
               className="h-8 w-8"
               onClick={() => handleQuantityChange(item.quantity + 1)}
-              disabled={item.quantity >= item.stockQuantity || isUpdating}
+              disabled={isUpdating}
             >
               <Plus className="h-3 w-3" />
             </Button>
@@ -111,12 +111,6 @@ export function CartItem({ item }: CartItemProps) {
           </Button>
         </div>
 
-        {/* Stock warning */}
-        {item.quantity >= item.stockQuantity && (
-          <p className="mt-1 text-xs text-amber-600">
-            Only {item.stockQuantity} available
-          </p>
-        )}
       </div>
     </div>
   );

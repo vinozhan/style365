@@ -22,11 +22,13 @@ function CategoryCard({ category }: { category: Category }) {
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       ) : (
-        <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
-          <span className="text-4xl font-bold text-slate-400">{category.name.charAt(0)}</span>
+        <div className="flex h-full items-center justify-center bg-linear-to-br from-slate-200 to-slate-300">
+          <span className="text-4xl font-bold text-slate-400">
+            {category.name.charAt(0)}
+          </span>
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/0 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
         <h3 className="text-lg font-semibold">{category.name}</h3>
         <p className="mt-1 flex items-center text-sm text-white/80">

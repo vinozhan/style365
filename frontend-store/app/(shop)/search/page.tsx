@@ -1,19 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ChevronRight, Filter } from 'lucide-react';
+import { Search, ChevronRight, Filter, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { ProductFilters } from '@/components/products/ProductFilters';
 import { ProductSort } from '@/components/products/ProductSort';
 import { useProductSearch } from '@/features/products/hooks/useProducts';
 import type { ProductFilters as FilterType } from '@/types';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') ?? '';
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -164,5 +165,26 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-custom py-8">
+          <Skeleton className="mb-6 h-6 w-32" />
+          <Skeleton className="mb-8 h-12 max-w-xl" />
+          <Skeleton className="mb-8 h-10 w-64" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

@@ -16,6 +16,9 @@ export function useWishlists() {
   });
 }
 
+// Alias for convenience
+export const useWishlist = useWishlists;
+
 export function useWishlistStatus(productId: string) {
   const { isAuthenticated } = useAuthStore();
 

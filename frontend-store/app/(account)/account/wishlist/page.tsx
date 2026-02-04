@@ -8,7 +8,10 @@ import { WishlistItem } from '@/components/account';
 import { useWishlist } from '@/features/wishlists/hooks/useWishlist';
 
 export default function WishlistPage() {
-  const { data: wishlist, isLoading } = useWishlist();
+  const { data: wishlists, isLoading } = useWishlist();
+
+  // Get all items from all wishlists (typically there's one default wishlist)
+  const allItems = wishlists?.flatMap((w) => w.items) ?? [];
 
   if (isLoading) {
     return (
@@ -23,7 +26,7 @@ export default function WishlistPage() {
     );
   }
 
-  if (!wishlist || wishlist.length === 0) {
+  if (allItems.length === 0) {
     return (
       <div>
         <h1 className="mb-6 text-2xl font-bold">My Wishlist</h1>
@@ -47,12 +50,12 @@ export default function WishlistPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Wishlist</h1>
-        <p className="text-slate-500">{wishlist.length} items</p>
+        <p className="text-slate-500">{allItems.length} items</p>
       </div>
 
       <div className="space-y-4">
-        {wishlist.map((product) => (
-          <WishlistItem key={product.id} product={product} />
+        {allItems.map((item) => (
+          <WishlistItem key={item.id} item={item} />
         ))}
       </div>
     </div>

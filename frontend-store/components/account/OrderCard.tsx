@@ -35,7 +35,7 @@ export function OrderCard({ order }: OrderCardProps) {
             </Badge>
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            Placed on {formatDate(order.orderDate)}
+            Placed on {formatDate(order.createdAt)}
           </p>
         </div>
         <p className="text-lg font-semibold">{formatCurrency(order.totalAmount)}</p>
@@ -48,9 +48,9 @@ export function OrderCard({ order }: OrderCardProps) {
             key={item.id}
             className="relative h-16 w-16 overflow-hidden rounded-lg bg-slate-100"
           >
-            {item.productImageUrl ? (
+            {item.productImage ? (
               <Image
-                src={item.productImageUrl}
+                src={item.productImage}
                 alt={item.productName}
                 fill
                 className="object-cover"

@@ -4,7 +4,7 @@ import type { Order, PaginatedResponse, OrderAddress } from '@/types';
 export interface CreateOrderInput {
   shippingAddress: OrderAddress;
   billingAddress: OrderAddress;
-  customerEmail: string;
+  customerEmail?: string;
   customerPhone?: string;
   notes?: string;
   paymentMethod: string;

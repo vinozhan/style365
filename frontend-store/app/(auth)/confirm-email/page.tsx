@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useConfirmEmail, useResendConfirmation } from '@/features/auth/hooks/useAuth';
 
-export default function ConfirmEmailPage() {
+function ConfirmEmailContent() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('userId');
   const token = searchParams.get('token');
@@ -116,5 +116,22 @@ export default function ConfirmEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfirmEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="rounded-lg border bg-white p-8 shadow-sm">
+          <div className="text-center">
+            <Loader2 className="mx-auto h-12 w-12 animate-spin text-slate-400" />
+            <h1 className="mt-4 text-xl font-semibold">Loading...</h1>
+          </div>
+        </div>
+      }
+    >
+      <ConfirmEmailContent />
+    </Suspense>
   );
 }
