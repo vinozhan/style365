@@ -20,6 +20,10 @@ public class OrderDto
     public string CustomerEmail { get; set; } = string.Empty;
     public string? CustomerPhone { get; set; }
     public OrderStatus Status { get; set; }
+    public decimal Subtotal { get; set; }
+    public decimal ShippingAmount { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public string Currency { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
@@ -28,7 +32,7 @@ public class OrderDto
     public string? TrackingNumber { get; set; }
     public string? ShippingCarrier { get; set; }
     public string? Notes { get; set; }
-    
+
     public OrderAddressDto ShippingAddress { get; set; } = null!;
     public OrderAddressDto BillingAddress { get; set; } = null!;
     public List<OrderItemDto> Items { get; set; } = new();
